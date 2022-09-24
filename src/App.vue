@@ -96,7 +96,7 @@
     .main_container{
         border-radius: 10px;
         height: 440px;
-        background-image:  url('https://kartinkin.net/uploads/posts/2021-07/1626741784_19-kartinkin-com-p-belii-fon-geometriya-krasivo-20.jpg');
+        background-image:  url('./assets/doughnut-background.jpg');
         background-repeat: no-repeat;
         background-size: 100%;
         text-align: center;
@@ -105,7 +105,7 @@
         position: static;
         height: 93%;
         width: 400px;
-        background-image: url('https://papik.pro/uploads/posts/2021-12/1639326639_1-papik-pro-p-tsiferblat-klipart-1.png');
+        background-image: url('./assets/clock.png');
         background-size: 47.5%;
         background-repeat: no-repeat;
         background-position: center;
