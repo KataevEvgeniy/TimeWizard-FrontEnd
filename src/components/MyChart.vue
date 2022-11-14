@@ -27,12 +27,7 @@ export default {
     datasetIdKey: {
       type: String,
       default: 'label'
-    },
-    number1:{
-      type: Number,
-      default: 2,
-      required: true
-    },  
+    }  
   },
   data() {
     return{

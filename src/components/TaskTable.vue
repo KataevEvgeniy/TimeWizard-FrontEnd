@@ -1,6 +1,6 @@
 <template>
 	<div class="tasks">
-        <div class="task_exam" v-for="post in posts" :key="post">
+        <div class="task_exam" v-for="post in posts" :key="post" :style="styleObject">
                 <div class="name">Название: {{post.title}} </div>
                 <div class="definition">Описание: {{post.definition}}</div>
         </div>
@@ -26,7 +26,11 @@
                 ],
                 title: '',
                 definition: '',
-                
+                color: "red",
+                styleObject: {
+                    border: '3px solid red',
+                    background: "linear-gradient(to right, red 3%, #474B4F 3%)",
+                }
             }
         },
         methods: {
@@ -51,14 +55,21 @@
         margin-top: 15px;
 	}
 	.task_exam{
-		border-radius: 10px;
+		border-radius: 14px;
         height: 60px;
-        background: linear-gradient(to right, yellow  3%, #474B4F 3%);
+        
+        /* box-shadow: 0px 0px 4px 4px rgba(71,75,79,1); */
+        border: 1px solid;
+        border-color: grey;
+    }
+    .task_exam:hover{
+        border: 1px solid;
+        border-color: var(--color);
     }
 	.task_form{
         text-align: right;
         background-color: #474B4F;
-        border-radius: 10px;
+        border-radius: 14px;
     }
     
     .tasks{
@@ -72,9 +83,7 @@
         text-align: left;
 
     }
-    .name{
-
-    }
+    
     .definition{
         font-size: 16px;
     }
@@ -82,7 +91,7 @@
     .definition_input,.name_input,.button_input{
 		border: none;
         margin-right: 10px;
-        border-radius: 10px;
+        border-radius: 14px;
         background-color: #222629;
     }
     .def{
