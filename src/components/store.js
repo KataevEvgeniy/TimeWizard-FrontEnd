@@ -4,11 +4,12 @@ export const useStore = createStore({
     state: {
         visible: true,
         count: 0,
+        taskTableArray: JSON.parse(localStorage.getItem("tasks")) ?? [[],[],[]]
     },
     mutations:{
         increment (state) {
             state.count++
-        }
+        },
     },
     actions:{
 

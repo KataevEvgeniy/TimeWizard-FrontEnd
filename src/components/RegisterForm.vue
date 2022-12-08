@@ -2,8 +2,7 @@
     <form @submit.prevent style="margin-top: 100px;">
         <input :value="User.username" @input="User.username = $event.target.value" placeholder="Username" type="text" class="white_input">
         <input :value="User.email" @input="checkEmail($event.target.value)" id="email" placeholder="Email" type="text" class="white_input">
-        <input :value="User.password" @input="User.password = $event.target.value" placeholder="Password" type="Password" class="white_input"><br/>
-        <input @input="checkPassword($event.target.value)" id="checkerPass" placeholder="Retype password" type="Password" class="white_input"><br/>
+        <input :value="User.password" @input="checkPassword($event.target.value)" id="password" placeholder="Password" type="Password" class="white_input"><br/>
         <button @click="register"  class="white_button" >Register</button>
         <div id="errorPlaceholder"></div>
     </form>
@@ -21,7 +20,10 @@
         },
         data(){
             return {
-                EMAIL_REGEXP : /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu,
+                EMAIL_REGEX : /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu,
+                PASSWORD_REGEX: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/,
+                emailIsAccept: false,
+                passwordIsAccept: false,
                 User: {
                     username: '',
                     email: '',
@@ -31,41 +33,53 @@
         },
         methods:{
             async register(){
-                await axios.post("http://localhost:8081/taskScheduler/register", this.User,{headers:{'Content-Type': 'application/json',}})
-                .then((response) => {
-                    console.log(response);
-                    localStorage.setItem('token',response.headers.authorization);
-                    if(response.data == "Login is accept")
-                        location.href = 'http://localhost:8080/workspace'
-                })
-                .catch(function (error) {
-                    if(error.response.data == "User already registered"){
-                        console.log("уже зареган");
-                        document.getElementById('errorPlaceholder').innerHTML = "Вы уже зарегистрированны!";
-                    }
-                    console.log(error);
-                });
+                if(this.userIsTrue(this.User))
+                    await axios.post("http://localhost:8081/taskScheduler/register", this.User,{headers:{'Content-Type': 'application/json',}})
+                    .then((response) => {
+                        console.log(response);
+                        localStorage.setItem('token',response.headers.authorization);
+
+                        if(response.data == "Login is accept")
+                            location.href = 'http://localhost:8080/workspace'
+                    })
+                    .catch(function (error) {
+                        if(error.response.data == "User already registered")
+                            console.log("уже зареган");
+                        
+                        console.log(error);
+                    });
             },
             checkEmail(value){
-                if(value == "" && this.EMAIL_REGEXP.test(value)){
-                    
+                this.User.email = value;
+                if(value == ""){
+                    this.emailIsAccept = false;
                     document.getElementById('email').setAttribute("style", "color: black");
-                }else if(this.EMAIL_REGEXP.test(value)){
-                    this.User.email = value;
+                }else if(this.EMAIL_REGEX.test(value)){
+                    this.emailIsAccept = true;
                     document.getElementById('email').setAttribute("style", "color: black");
                 }else{
+                    this.emailIsAccept = false;
                     document.getElementById('email').setAttribute("style", "color: red");
                 }
-                
             },
             checkPassword(value){
-                if(value != this.User.password)
-                    document.getElementById('checkerPass').setAttribute("style", "color: red");
-                else{
-                    document.getElementById('checkerPass').setAttribute("style", "color: black");
-                    this.User.password = value;
-                }
-                    
+                this.User.password = value;
+                if(value == ""){
+                    this.passwordIsAccept = false;
+                    document.getElementById('password').setAttribute("style", "color: black");
+                }else if(this.PASSWORD_REGEX.test(value)){
+                    this.passwordIsAccept = true;
+                    document.getElementById('password').setAttribute("style", "color: black");
+                }else{
+                    this.passwordIsAccept = false;
+                    document.getElementById('password').setAttribute("style", "color: red");
+                }    
+            },
+            userIsTrue(){
+                if (this.passwordIsAccept && this.emailIsAccept)
+                    return true
+                else
+                    return false
             }
         }
     }

@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
-import workspace from '../work-space.vue'
+import workspace from '../WorkSpace.vue'
 import WelcomeForm from './WelcomeForm'
 
 

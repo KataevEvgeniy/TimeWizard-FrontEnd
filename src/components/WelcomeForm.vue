@@ -10,7 +10,7 @@
             <div v-else>
                 <register_form/>
             </div>
-            <button @click="checkToken">Get Request</button>
+            
         </div>  
     </div>
 </template>
@@ -50,7 +50,8 @@
                     console.log(error);
                     
                 });
-            }
+            },
+            
         }
     }
 </script>
