@@ -1,95 +1,161 @@
 <template>
-	<div class="tasks">
-        <div class="task_exam" v-for="post in posts" :key="post" >
-                <div class="name">> {{post.title}} </div>
-                <div class="definition">> {{post.definition}}</div>
-                <div class="date">> {{post.startTime}} - {{post.endTime}}</div>
+    
+	<div @submit.prevent class="tasks">
+        <div  :id="post.id" class="task_exam" v-for="post in posts" :key="post" >
+            <div class="name">> {{post.title}} </div>
+            
+            <div class="definition">> {{post.definition}}</div>
+            <div class="date">> {{new Date(post.startDate)}} - {{new Date(post.endDate)}}</div>
+            <span v-if="post.completed == null"> 
+                <button @click="taskTemplate.completed = true; updateTask(post)">Выполнено</button>
+                <button @click="taskTemplate.completed = false; updateTask(post)">Провалено</button>
+            </span>
         </div>
         <span class="create_form_box">
             <form @submit.prevent class="task_form" >
                     <textarea 
                         oninput="this.style.height = (this.scrollHeight - 4) + 'px';" 
-                        :value="title" 
+                        :value="taskTemplate.title" 
                         placeholder="Название" 
-                        @input="title = $event.target.value"  
+                        @input="taskTemplate.title = $event.target.value"  
                         maxlength="200"
                         class="name_input"></textarea><br>
                     
                     <textarea 
                         oninput="this.style.height = (this.scrollHeight - 4) + 'px';" 
-                        :value="definition" 
+                        :value="taskTemplate.definition" 
                         placeholder="Описание" 
-                        @input="definition = $event.target.value" 
+                        @input="taskTemplate.definition = $event.target.value" 
                         maxlength="500" 
                         class="definition_input"></textarea><br>
-                    <span>
-                        <input :value="startTime" @input="startTime = $event.target.value" style="margin-left: 10px" type="time" >
+                    <span style="margin-left: 10px">
+                        <input :value="taskTemplate.startDate.date" @input="taskTemplate.startDate.date = $event.target.value"  type="date"/>
+                        <input :value="taskTemplate.startDate.time" @input="taskTemplate.startDate.time = $event.target.value"  type="time" >
                         &#8212;
-                        <input :value="endTime" @input="endTime = $event.target.value" type="time" >
+                        <input :value="taskTemplate.endDate.date" @input="taskTemplate.endDate.date = $event.target.value" style="margin-left: 10px" type="date"/>
+                        <input :value="taskTemplate.endDate.time" @input="taskTemplate.endDate.time = $event.target.value" type="time" >
                     </span>
+                    
             </form>
-            <button class="create_button" @click="createPost"></button>
+            <button class="create_button" @click="createTask"></button>
         </span>
+        <button @click="getStartTime"></button>
     </div>
 </template>
 
 <script>
     //import { useStore } from './store'
     import axios from 'axios'
-
+    import { mapGetters } from 'vuex';
 
 	export default{
-        props:{
-            taskId: Number,
-        },
+        
 		data() {
             return {
-                posts: this.$store.state.taskTableArray[this.taskId-1],
-                id: 0,
-                title: '',
-                definition: '',
-                startTime: "00:00",
-                endTime:"00:00",
-                color: "red",
-                styleObject: {
-                    border: '3px solid red',
-                    background: "linear-gradient(to right, red 3%, #474B4F 3%)",
-                }
+                posts: [],
+                r:0,
+                
+                
+                taskTemplate:{
+                    title: '',
+                    definition: '',
+                    startDate:{
+                        date:"",
+                        time:""
+                    },
+                    endDate:{
+                        date:"",
+                        time:""
+                    },
+                    completed: null,
+
+                    rollBack(){
+                        this.title = '';
+                        this.definition = '';
+                        this.startTime = {
+                            date:"",
+                            time:""
+                        };
+                        this.endTime = {
+                            date:"",
+                            time:""
+                        };
+                        this.completed = null;
+                    }
+                },
+                
             }
         },
-        setup(){
-            console.log("setup");
+        mounted() {
+            this.displayTasks(this.$store.getters.selectedDay.date.getTime());
+        },
+        computed: {
+            ...mapGetters(['selectedDay']),
+            ...mapGetters(['taskTableArray']),
+            
+        },
+        watch: {
+            selectedDay() {
+                this.displayTasks(this.$store.getters.selectedDay.date.getTime());
+            },
+            taskTableArray(){
+                this.r++;
+                this.displayTasks(this.$store.getters.selectedDay.date.getTime());
+            }
         },
         methods: {
-            async createPost(){
-                const newPost = {
-                    title: this.title,
-                    definition: this.definition,
-                    startTime: this.startTime,
-                    endTime: this.endTime,
+            async createTask(){
+                const newTask = {
+                    title: this.taskTemplate.title,
+                    definition: this.taskTemplate.definition,
+                    startDate:  new Date(this.taskTemplate.startDate.date + " " + this.taskTemplate.startDate.time),
+                    endDate: new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time),
+                    date: this.$store.getters.selectedDay.date,
+                    completed: null,
                 }
-                await this.saveTask(newPost);
-                newPost.id = this.id
-                this.posts.push(newPost);
-                this.title = "";
-                this.definition = "";
-                localStorage.setItem("tasks", JSON.stringify(this.$store.state.taskTableArray))
                 
-                //this.posts = JSON.parse(localStorage.getItem("tasks"));
+                await this.createTaskOnServer(newTask);
+                this.taskTemplate.rollBack();
+                this.$store.dispatch('getAllTasks');
                 
-                //useStore.commit("addTable",{id:this.taskId, postArray:this.posts});
             },
-            async saveTask(data){
+            async createTaskOnServer(data){
                 await axios.post("http://localhost:8081/taskScheduler/saveTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
-                        this.id = parseInt(response.headers.get("task-id"));
                         console.log(response);
                     })
                     .catch(function (error) {
                         console.log(error);
-                    });
+                });
             },
+            displayTasks(date){
+                let allTasks = this.$store.getters.taskTableArray;
+                let taskInThisDay = [];
+                allTasks.forEach((item,index)=>{
+                    if(item.date == date)
+                        taskInThisDay.push(allTasks[index]);
+                })
+                this.posts = taskInThisDay;
+                
+            },
+            async updateTask(task){
+                let tempTask = task
+                tempTask.completed = this.taskTemplate.completed;
+                await this.updateTaskOnServer(tempTask);
+                this.$store.dispatch('getAllTasks')
+            },
+            async updateTaskOnServer(data){
+                await axios.post("http://localhost:8081/taskScheduler/updateTask", data,{headers:{'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')}})
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                });
+                    this.taskTemplate.rollBack();
+            }
         }
     }
 </script>
@@ -170,7 +236,7 @@
         outline-offset: -4px;
         
     }
-    input[type=time] {
+    input[type="time"],input[type="date"] {
         
         border: none;
         color: #d4d4d4;
@@ -180,33 +246,36 @@
         height: 18px;
         background-color: rgba(0, 0, 0, 0);
     }
-    input[type=time]::-webkit-datetime-edit-fields-wrapper {
+    input[type="time"]::-webkit-datetime-edit-fields-wrapper {
         display: flex;
         
     }
-    input[type=time]::-webkit-datetime-edit-text {
+    input[type="time"]::-webkit-datetime-edit-text {
         padding: 19px 4px;
     }
-    input[type=time]::-webkit-datetime-edit-hour-field {
+    input[type="time"]::-webkit-datetime-edit-hour-field {
         /* background-color: #f2f4f5; */
         border-radius: 15%;
         padding: 19px 5px;
     }
-    input[type=time]::-webkit-datetime-edit-minute-field {
+    input[type="time"]::-webkit-datetime-edit-minute-field {
         /* background-color: #f2f4f5; */
         border-radius: 15%;
         padding: 19px 5px;
     }
-    input[type=time]::-webkit-datetime-edit-ampm-field {
+    input[type="time"]::-webkit-datetime-edit-ampm-field {
         display: none;
     }
-    input[type=time]::-webkit-clear-button {
+    input[type="time"]::-webkit-clear-button {
         display: none;
     }
-    input[type=time]::-webkit-inner-spin-button {
+    input[type="time"]::-webkit-inner-spin-button {
         display: none;
     }
     input[type="time"]::-webkit-calendar-picker-indicator {
         display: none;
+    }
+    input[type="date"]{
+        width: 95px;
     }
 </style>
