@@ -53,33 +53,21 @@
 		data() {
             return {
                 posts: [],
-                r:0,
+                
                 
                 
                 taskTemplate:{
                     title: '',
                     definition: '',
-                    startDate:{
-                        date:"",
-                        time:""
-                    },
-                    endDate:{
-                        date:"",
-                        time:""
-                    },
+                    startDate:this.getCurrentDate(0),
+                    endDate:this.getCurrentDate(1),
                     completed: null,
 
                     rollBack(){
                         this.title = '';
                         this.definition = '';
-                        this.startTime = {
-                            date:"",
-                            time:""
-                        };
-                        this.endTime = {
-                            date:"",
-                            time:""
-                        };
+                        this.startDate = this.getCurrentDate(0),
+                        this.endDate = this.getCurrentDate(1),
                         this.completed = null;
                     }
                 },
@@ -99,9 +87,10 @@
                 this.displayTasks(this.$store.getters.selectedDay.date.getTime());
             },
             taskTableArray(){
-                this.r++;
                 this.displayTasks(this.$store.getters.selectedDay.date.getTime());
-            }
+            },
+            
+            
         },
         methods: {
             async createTask(){
@@ -129,6 +118,14 @@
                         console.log(error);
                 });
             },
+            getCurrentDate(appendedHour){
+                let curDate = new Date();
+                curDate.setHours(curDate.getHours() + appendedHour);
+                return {
+                    date:curDate.getFullYear() + "-" + (curDate.getMonth() + 1).toString().padStart(2, "0") + "-" + curDate.getDate().toString().padStart(2, "0"),
+                    time:curDate.getHours().toString().padStart(2, "0") + ":" + curDate.getMinutes().toString().padStart(2, "0")
+                };
+            },
             displayTasks(date){
                 let allTasks = this.$store.getters.taskTableArray;
                 let taskInThisDay = [];
@@ -136,8 +133,8 @@
                     if(item.date == date)
                         taskInThisDay.push(allTasks[index]);
                 })
-                this.posts = taskInThisDay;
-                
+                this.$store.commit('taskInThisDay',taskInThisDay)
+                this.posts = this.$store.getters.taskInThisDay;
             },
             async updateTask(task){
                 let tempTask = task

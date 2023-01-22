@@ -6,6 +6,7 @@ export const useStore = createStore({
         visible: true,
         count: 0,
         taskTableArray: [],
+        taskInThisDay: [],
         selectedDay: new Date(), 
     },
     mutations:{
@@ -17,6 +18,9 @@ export const useStore = createStore({
         },
         setTaskTableArray(state,array){
             state.taskTableArray = array;
+        },
+        taskInThisDay(state,tasks){
+            state.taskInThisDay = tasks;
         }
     },
     actions:{
@@ -42,6 +46,9 @@ export const useStore = createStore({
         },
         taskTableArray(state){
             return state.taskTableArray;
+        },
+        taskInThisDay(state){
+            return state.taskInThisDay;
         }
     },
     computed:{
@@ -50,6 +57,9 @@ export const useStore = createStore({
         },
         taskTableArray(){
             return this.$store.getters.taskTableArray;
+        },
+        taskInThisDay(){
+            return this.$store.getters.taskInThisDay;
         }
     }
 })
