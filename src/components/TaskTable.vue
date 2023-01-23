@@ -39,7 +39,7 @@
             </form>
             <button class="create_button" @click="createTask"></button>
         </span>
-        <button @click="getStartTime"></button>
+        <button @click="this.$store.dispatch('showMessage',{messageText:'hell',color:'red'})">click</button>  
     </div>
 </template>
 
@@ -102,12 +102,16 @@
                     date: this.$store.getters.selectedDay.date,
                     completed: null,
                 }
+                if(newTask.startDate > newTask.endDate){
+                    this.$store.dispatch('showMessage',{messageText:'Task cannot end before it starts',color:'red'})
+                }
                 
                 await this.createTaskOnServer(newTask);
                 this.taskTemplate.rollBack();
                 this.$store.dispatch('getAllTasks');
                 
             },
+            
             async createTaskOnServer(data){
                 await axios.post("http://localhost:8081/taskScheduler/saveTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})

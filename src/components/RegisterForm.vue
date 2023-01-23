@@ -40,11 +40,15 @@
                         localStorage.setItem('token',response.headers.authorization);
 
                         if(response.data == "Login is accept")
-                            location.href = 'http://localhost:8080/workspace'
+                            this.$store.dispatch('showMessage',{messageText:response.data,color:'green'})
+                            setTimeout(function() {
+                                location.href = 'http://localhost:8080/workspace'
+                            }, 500); 
+                            
                     })
                     .catch(function (error) {
                         if(error.response.data == "User already registered")
-                            console.log("уже зареган");
+                            this.$store.dispatch('showMessage',{messageText:error.response.data,color:'red'})
                         
                         console.log(error);
                     });

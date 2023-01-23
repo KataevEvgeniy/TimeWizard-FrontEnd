@@ -39,6 +39,28 @@ export const useStore = createStore({
             });
             
         },
+        showMessage(state,{messageText,color}){
+            var errorMessage = document.createElement("div");
+            errorMessage.style.backgroundColor = color;
+            errorMessage.style.padding = "10px";
+            errorMessage.style.color = "black";
+            errorMessage.style.position = "fixed";
+            errorMessage.style.top = "10px";
+            errorMessage.style.right = "10px";
+            errorMessage.style.borderRadius = "20px";
+            errorMessage.style.transition = "opacity 10s ease-in-out";
+            errorMessage.style.opacity = "1";
+
+            errorMessage.innerHTML = messageText;
+            
+            document.body.appendChild(errorMessage);
+            setTimeout(function(){
+                errorMessage.style.opacity = "0";
+            },1);
+            setTimeout(function() {
+                errorMessage.remove();
+            }, 10000); 
+        },
     },
     getters:{
         selectedDay(state) {
