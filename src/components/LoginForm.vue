@@ -9,7 +9,7 @@
 <script>
 
     import axios from 'axios'
-
+    import { useStore } from './store';
 
 
     export default {
@@ -36,10 +36,16 @@
                     .then((response) => {
                         console.log(response.headers);
                         localStorage.setItem('token',response.headers.authorization);
-                        if(response.data == "Login is accept")
-                            location.href = 'http://localhost:8080/workspace'
+                        if(response.data == "Login is accept"){
+                            useStore.dispatch('showMessage',{messageText:response.data,color:'green'})
+                            setTimeout(function() {
+                                location.href = 'http://localhost:8080/workspace'
+                            }, 500);
+                        }
                     })
                     .catch(function (error) {
+                        if(error.response.data == "Login failed")
+                            useStore.dispatch('showMessage',{messageText:"Password or login is incorrect",color:'red'})
                         console.log(error);
                     });
             },
@@ -72,8 +78,10 @@
             userIsTrue(){
                 if (this.passwordIsAccept && this.emailIsAccept)
                     return true
-                else
+                else{
+                    useStore.dispatch('showMessage',{messageText:'You have entered incorrect data',color:'red'})
                     return false
+                }
             }
         }
     }

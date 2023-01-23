@@ -48,7 +48,7 @@ export const useStore = createStore({
             errorMessage.style.top = "10px";
             errorMessage.style.right = "10px";
             errorMessage.style.borderRadius = "20px";
-            errorMessage.style.transition = "opacity 10s ease-in-out";
+            errorMessage.style.transition = "opacity 2.5s ease-in-out";
             errorMessage.style.opacity = "1";
 
             errorMessage.innerHTML = messageText;
@@ -59,7 +59,7 @@ export const useStore = createStore({
             },1);
             setTimeout(function() {
                 errorMessage.remove();
-            }, 10000); 
+            }, 2500); 
         },
     },
     getters:{
