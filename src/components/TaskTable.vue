@@ -11,7 +11,7 @@
             <div class="name">> {{post.title}} </div>
             
             <div class="definition">> {{post.definition}}</div>
-            <div class="date">> {{new Date(post.startDate).toTimeString().slice(0,5)}} - {{new Date(post.startDate).toTimeString().slice(0,5)}}</div>
+            <div class="date">> {{new Date(post.startDate).toTimeString().slice(0,5)}} - {{new Date(post.endDate).toTimeString().slice(0,5)}}</div>
             <span v-if="post.completed == null"> 
                 <button @click="taskTemplate.completed = true; updateTask(post)">Выполнено</button>
                 <button @click="taskTemplate.completed = false; updateTask(post)">Провалено</button>
@@ -112,6 +112,7 @@
                 }
                 if(newTask.startDate > newTask.endDate){
                     this.$store.dispatch('showMessage',{messageText:'Task cannot end before it starts',color:'red'})
+                    return;
                 }
                 
                 await this.createTaskOnServer(newTask);
@@ -147,7 +148,8 @@
                     if(item.date == date)
                         taskInThisDay.push(allTasks[index]);
                 })
-                this.$store.commit('taskInThisDay',taskInThisDay)
+                taskInThisDay.sort((a,b)=>(a.startDate - b.endDate));
+                this.$store.commit('taskInThisDay',taskInThisDay);
                 this.posts = this.$store.getters.taskInThisDay;
             },
             async updateTask(task){

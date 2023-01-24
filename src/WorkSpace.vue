@@ -73,38 +73,33 @@
                 dates.forEach(function(date){
                     let startInMinutes = new Date(date.startDate).getHours()*60 + new Date(date.startDate).getMinutes();
                     let endInMinutes =  new Date(date.endDate).getHours()*60 + new Date(date.endDate).getMinutes();
-                    inputDates.push({start: startInMinutes,end: endInMinutes})
+                    inputDates.push({date:date,start: startInMinutes,end: endInMinutes})
                 })
                 
                 
                 inputDates.sort((a, b) => a.start - b.start);
-
-                let sortedForSirclesDates = []
-                while(sortForSircles(inputDates)){}
                 
-                function sortForSircles(dateArray){
-                    let unsortedDates=[]
-                    let sortedDates = []
-                    for(let i = 0, lastEnd = 0;i<dateArray.length;i++){
-                        if(dateArray[i].start<lastEnd)
-                            unsortedDates.push(dateArray[i]);
-                        else
-                            sortedDates.push(dateArray[i]);
-                        lastEnd = dateArray[i].end;
-                    }
-                    sortedForSirclesDates.push(sortedDates)
-                    if(unsortedDates.length == 0)
-                        return false;
-                    else{
-                        inputDates = unsortedDates;
-                        return true;
-                    }
-                }
+                let sortedDatesForSircle = sortSircle(inputDates);
 
                 function sortSircle(inputArr){
-                    
+                    let arraysForAllRing = []
+                    while(inputArr.length > 0){
+                        let arrayForSingleRing = []
+                        for(let i = 0, lastEnd = 0;i<inputArr.length;i++){
+                            if(inputArr[i].start>lastEnd){
+                                lastEnd = inputArr[i].end;
+                                arrayForSingleRing.push(inputArr[i]);
+                                inputArr.splice(i,1);
+                            }
+                            else{
+                                lastEnd = inputArr[i].end;
+                            }
+                        }
+                        arraysForAllRing.push(arrayForSingleRing)
+                    }
+                    return arraysForAllRing;
                 }
-                console.log(sortedForSirclesDates);
+                
                 
                 
                 var stage = new Konva.Stage({
@@ -124,26 +119,21 @@
                     width: (minArcRadius*2)/1.4,
                     align: 'left'
                 });
-                for(let i = 0;i<sortedForSirclesDates.length;i++){
-                    sortedForSirclesDates[i].forEach(function(date){
+
+                for(let i = 0;i<sortedDatesForSircle.length;i++){
+                    sortedDatesForSircle[i].forEach(function(data){
                         var arc = new Konva.Arc({
                             x: stage.width() / 2,
                             y: stage.height() / 2,
                             innerRadius: 70+i*30,
                             outerRadius: 100+i*30,
-                            angle: (date.end-date.start)/4,
-                            fill: 'green',
+                            angle: (data.end-data.start)/4,
+                            fill: data.date.colorInHex,
                             stroke: 'black',
                             strokeWidth: 4,
-                            rotation: date.start/4-90
+                            rotation: data.start/4-90
                         });
-                        arc.on('mouseover', function() {
-                            var newColor = Konva.Util.getRandomColor();
-                            
-                            this.fill(newColor);
-                            
-                            layer.draw();
-                        });
+                        arc.on('mouseover', function() {});
                         
                         layer.add(arc);
                     })
