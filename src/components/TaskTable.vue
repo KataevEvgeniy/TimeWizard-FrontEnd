@@ -1,11 +1,17 @@
 <template>
     
 	<div @submit.prevent class="tasks">
-        <div  :id="post.id" class="task_exam" v-for="post in posts" :key="post" >
+        <div  
+        :id="post.id" 
+        class="task_exam" 
+        :style="{background: getMainGradient(post.colorInHex)}" 
+        v-for="post in posts" 
+        :key="post"
+         >
             <div class="name">> {{post.title}} </div>
             
             <div class="definition">> {{post.definition}}</div>
-            <div class="date">> {{new Date(post.startDate)}} - {{new Date(post.endDate)}}</div>
+            <div class="date">> {{new Date(post.startDate).toTimeString().slice(0,5)}} - {{new Date(post.startDate).toTimeString().slice(0,5)}}</div>
             <span v-if="post.completed == null"> 
                 <button @click="taskTemplate.completed = true; updateTask(post)">Выполнено</button>
                 <button @click="taskTemplate.completed = false; updateTask(post)">Провалено</button>
@@ -35,11 +41,12 @@
                         <input :value="taskTemplate.endDate.date" @input="taskTemplate.endDate.date = $event.target.value" style="margin-left: 10px" type="date"/>
                         <input :value="taskTemplate.endDate.time" @input="taskTemplate.endDate.time = $event.target.value" type="time" >
                     </span>
-                    
+                    <input :value="taskTemplate.colorInHex" @input="taskTemplate.colorInHex = $event.target.value" type="color"/>
             </form>
             <button class="create_button" @click="createTask"></button>
         </span>
         <button @click="this.$store.dispatch('showMessage',{messageText:'hell',color:'red'})">click</button>  
+        
     </div>
 </template>
 
@@ -53,7 +60,7 @@
 		data() {
             return {
                 posts: [],
-                
+                color1:'#0076D1',
                 
                 
                 taskTemplate:{
@@ -62,13 +69,13 @@
                     startDate:this.getCurrentDate(0),
                     endDate:this.getCurrentDate(1),
                     completed: null,
-
+                    colorInHex: "#FFFFFF",
+                    
                     rollBack(){
                         this.title = '';
                         this.definition = '';
-                        this.startDate = this.getCurrentDate(0),
-                        this.endDate = this.getCurrentDate(1),
                         this.completed = null;
+                        
                     }
                 },
                 
@@ -101,6 +108,7 @@
                     endDate: new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time),
                     date: this.$store.getters.selectedDay.date,
                     completed: null,
+                    colorInHex: this.taskTemplate.colorInHex,
                 }
                 if(newTask.startDate > newTask.endDate){
                     this.$store.dispatch('showMessage',{messageText:'Task cannot end before it starts',color:'red'})
@@ -111,7 +119,9 @@
                 this.$store.dispatch('getAllTasks');
                 
             },
-            
+            getMainGradient(color) {
+                return `linear-gradient(114deg, #222629 60%, ${color} 95%)`;
+            },
             async createTaskOnServer(data){
                 await axios.post("http://localhost:8081/taskScheduler/saveTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
@@ -162,6 +172,8 @@
 </script>
 
 <style scoped>
+
+    
     textarea {
         resize: none;
     }
@@ -171,7 +183,7 @@
 	}
 	.task_exam{
 		border-radius: 14px;
-        
+        user-select: contain;
         border: 1px solid;
         border-color: grey;
     }
