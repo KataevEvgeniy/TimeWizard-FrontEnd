@@ -11,7 +11,11 @@
             <div class="name">> {{post.title}} </div>
             
             <div class="definition">> {{post.definition}}</div>
-            <div class="date">> {{new Date(post.startDate).toTimeString().slice(0,5)}} - {{new Date(post.endDate).toTimeString().slice(0,5)}}</div>
+            <div class="date">>
+                {{ post.startDate < this.$store.state.selectedDay.date ? new Date(post.startDate).toDateString().slice(3,10) : "" }} 
+                {{new Date(post.startDate).toTimeString().slice(0,5)}} - 
+                {{ (post.endDate - this.$store.state.selectedDay.date) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }} 
+                {{new Date(post.endDate).toTimeString().slice(0,5)}}</div>
             <span v-if="post.completed == null"> 
                 <button @click="taskTemplate.completed = true; updateTask(post)">Выполнено</button>
                 <button @click="taskTemplate.completed = false; updateTask(post)">Провалено</button>
@@ -34,6 +38,7 @@
                         @input="taskTemplate.definition = $event.target.value" 
                         maxlength="500" 
                         class="definition_input"></textarea><br>
+                    <input :value="taskTemplate.colorInHex" @input="taskTemplate.colorInHex = $event.target.value" type="color"/><br>
                     <span style="margin-left: 10px">
                         <input :value="taskTemplate.startDate.date" @input="taskTemplate.startDate.date = $event.target.value"  type="date"/>
                         <input :value="taskTemplate.startDate.time" @input="taskTemplate.startDate.time = $event.target.value"  type="time" >
@@ -41,7 +46,7 @@
                         <input :value="taskTemplate.endDate.date" @input="taskTemplate.endDate.date = $event.target.value" style="margin-left: 10px" type="date"/>
                         <input :value="taskTemplate.endDate.time" @input="taskTemplate.endDate.time = $event.target.value" type="time" >
                     </span>
-                    <input :value="taskTemplate.colorInHex" @input="taskTemplate.colorInHex = $event.target.value" type="color"/>
+                    
             </form>
             <button class="create_button" @click="createTask"></button>
         </span>
@@ -82,7 +87,7 @@
             }
         },
         mounted() {
-            this.displayTasks(this.$store.getters.selectedDay.date.getTime());
+            this.defineTasksOfDay(this.$store.getters.selectedDay.date.getTime());
         },
         computed: {
             ...mapGetters(['selectedDay']),
@@ -91,10 +96,10 @@
         },
         watch: {
             selectedDay() {
-                this.displayTasks(this.$store.getters.selectedDay.date.getTime());
+                this.defineTasksOfDay(this.$store.getters.selectedDay.date.getTime());
             },
             taskTableArray(){
-                this.displayTasks(this.$store.getters.selectedDay.date.getTime());
+                this.defineTasksOfDay(this.$store.getters.selectedDay.date.getTime());
             },
             
             
@@ -106,7 +111,6 @@
                     definition: this.taskTemplate.definition,
                     startDate:  new Date(this.taskTemplate.startDate.date + " " + this.taskTemplate.startDate.time),
                     endDate: new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time),
-                    date: this.$store.getters.selectedDay.date,
                     completed: null,
                     colorInHex: this.taskTemplate.colorInHex,
                 }
@@ -141,16 +145,21 @@
                     time:curDate.getHours().toString().padStart(2, "0") + ":" + curDate.getMinutes().toString().padStart(2, "0")
                 };
             },
-            displayTasks(date){
+            defineTasksOfDay(selectedDate){
                 let allTasks = this.$store.getters.taskTableArray;
                 let taskInThisDay = [];
                 allTasks.forEach((item,index)=>{
-                    if(item.date == date)
+                    if(roundDate(item.startDate) <= selectedDate && selectedDate <= roundDate(item.endDate) )
                         taskInThisDay.push(allTasks[index]);
                 })
                 taskInThisDay.sort((a,b)=>(a.startDate - b.endDate));
                 this.$store.commit('taskInThisDay',taskInThisDay);
                 this.posts = this.$store.getters.taskInThisDay;
+
+                function roundDate(dateInMillis){
+                    let d = new Date(dateInMillis);
+                    return new Date(d.getFullYear(),d.getMonth(),d.getDate())
+                }
             },
             async updateTask(task){
                 let tempTask = task
@@ -250,6 +259,13 @@
         outline: 4px solid #474B4F;
         outline-offset: -4px;
         
+    }
+    input[type="color"]{
+        width: 30px;
+        height: 30px;
+        border: none;
+        background-color: rgba(0, 0, 0, 0);
+        margin-left: 10px;
     }
     input[type="time"],input[type="date"] {
         
