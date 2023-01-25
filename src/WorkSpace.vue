@@ -69,34 +69,34 @@
                 let minutesInDay = 1440;
                 let minArcRadius = 70;
                 let inputDates = [];
+                let selectedDay = this.$store.getters.selectedDay.date;
+                
                 //let inputDates = [{start:50,end:70},{start:400,end:500},{start:60,end:65},{start:500,end:700},{start:1,end:30},{start:40,end:80},{start:1000,end:1100},{start:900,end:1440}]
                 dates.forEach(function(date){
-                    let startInMinutes = new Date(date.startDate).getHours()*60 + new Date(date.startDate).getMinutes();
-                    let endInMinutes =  new Date(date.endDate).getHours()*60 + new Date(date.endDate).getMinutes();
+                    let startInMinutes = date.startDate < selectedDay ? 0 : new Date(date.startDate).getHours()*60 + new Date(date.startDate).getMinutes();
+                    let endInMinutes =  (date.endDate - selectedDay) > 86400000 ? 1440 : new Date(date.endDate).getHours()*60 + new Date(date.endDate).getMinutes();
                     inputDates.push({date:date,start: startInMinutes,end: endInMinutes})
                 })
                 
                 
                 inputDates.sort((a, b) => a.start - b.start);
-                
+                inputDates.forEach((a)=>{console.log(a)})
                 let sortedDatesForSircle = sortSircle(inputDates);
-
+                
                 function sortSircle(inputArr){
                     let arraysForAllRing = []
                     while(inputArr.length > 0){
                         let arrayForSingleRing = []
                         for(let i = 0, lastEnd = 0;i<inputArr.length;i++){
-                            if(inputArr[i].start>lastEnd){
+                            if(inputArr[i].start>=lastEnd){
                                 lastEnd = inputArr[i].end;
                                 arrayForSingleRing.push(inputArr[i]);
                                 inputArr.splice(i,1);
                             }
-                            else{
-                                lastEnd = inputArr[i].end;
-                            }
                         }
                         arraysForAllRing.push(arrayForSingleRing)
                     }
+                    console.log(arraysForAllRing)
                     return arraysForAllRing;
                 }
                 
@@ -133,9 +133,42 @@
                             strokeWidth: 4,
                             rotation: data.start/4-90
                         });
-                        arc.on('mouseover', function() {});
+                        arc.on('mouseover', function(event) {
+                            var tooltip = new Konva.Label({
+                                x: event.evt.offsetX,
+                                y: event.evt.offsetY,
+                                opacity: 0.75
+                            });
+
+                            tooltip.add(new Konva.Tag({
+                                fill: 'black'
+                            }));
+
+                            tooltip.add(new Konva.Text({
+                                text: Math.floor(data.start/60).toString().padStart(2, "0") + ":" + (data.start%60).toString().padStart(2, "0")
+                                 + " - " + Math.floor(data.end/60).toString().padStart(2, "0") + ":" + (data.end%60).toString().padStart(2, "0"),
+                                fontFamily: 'Calibri',
+                                fontSize: 18,
+                                padding: 5,
+                                fill: 'white'
+                                
+                            }));
+
+                            layer.add(tooltip);
+                            layer.draw();
+                        });
                         
+                        arc.on('mouseout', function() {
+                            layer.find('Label')[0].remove();
+                            layer.draw();
+                        });
+
+                        arc.on('click', function(){
+                            document.getElementById(data.date.id).scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        });
                         layer.add(arc);
+
+                        
                     })
                 }
                 layer.add(text)
