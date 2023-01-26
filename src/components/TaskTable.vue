@@ -19,7 +19,9 @@
             <span v-if="post.completed == null"> 
                 <button @click="taskTemplate.completed = true; updateTask(post)">Выполнено</button>
                 <button @click="taskTemplate.completed = false; updateTask(post)">Провалено</button>
+                
             </span>
+            <button @click="deleteTaskOnServer(post)">Удалить</button>
         </div>
         <span class="create_form_box">
             <form @submit.prevent class="task_form" >
@@ -131,7 +133,7 @@
                 await axios.post("http://localhost:8081/taskScheduler/saveTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
-                        console.log(response);
+                        console.log(response);//TODO delete this
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -165,19 +167,39 @@
                 let tempTask = task
                 tempTask.completed = this.taskTemplate.completed;
                 await this.updateTaskOnServer(tempTask);
-                this.$store.dispatch('getAllTasks')
+                
+                
             },
             async updateTaskOnServer(data){
                 await axios.post("http://localhost:8081/taskScheduler/updateTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
-                        console.log(response);
+                        console.log(response);//TODO delete this
                     })
                     .catch(function (error) {
                         console.log(error);
                 });
-                    this.taskTemplate.rollBack();
-            }
+                this.taskTemplate.rollBack();
+                this.$store.dispatch('getAllTasks')
+            },
+            
+            deleteTask(task){
+                let tempTask = task;
+                tempTask1.completed = this.taskTemplate.completed;
+                this.deleteTaskOnServer(tempTask);
+            },
+            async deleteTaskOnServer(data){
+                await axios.post("http://localhost:8081/taskScheduler/deleteTask", data,{headers:{'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')}})
+                    .then((response) => {
+                        console.log(response);//TODO delete this
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                });
+                this.taskTemplate.rollBack();
+                this.$store.dispatch('getAllTasks');
+            },
         }
     }
 </script>

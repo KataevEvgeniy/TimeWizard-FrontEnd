@@ -80,7 +80,6 @@
                 
                 
                 inputDates.sort((a, b) => a.start - b.start);
-                inputDates.forEach((a)=>{console.log(a)})
                 let sortedDatesForSircle = sortSircle(inputDates);
                 
                 function sortSircle(inputArr){
@@ -96,7 +95,6 @@
                         }
                         arraysForAllRing.push(arrayForSingleRing)
                     }
-                    console.log(arraysForAllRing)
                     return arraysForAllRing;
                 }
                 
