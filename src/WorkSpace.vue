@@ -108,18 +108,27 @@
                     height: 400
                 });
                 var layer = new Konva.Layer();
-                
-                var text = new Konva.Text({
-                    x: (stage.width() / 2)-minArcRadius/1.4,
-                    y: (stage.height() / 2)-minArcRadius/1.4,
-                    text: '00:00 00.00.00',
-                    fontSize: 30,
-                    fontFamily: 'Calibri',
-                    fill: 'black',
-                    width: (minArcRadius*2)/1.4,
-                    align: 'left'
-                });
 
+                const arrow = new Konva.Arrow({
+                    
+                    points: [0, 0, 0, -65], // x1, y1, x2, y2
+                    stroke: 'white',
+                    x: stage.width() / 2,
+                    y: stage.height() / 2,
+                    rotation: 0,
+                    strokeWidth: 3
+                });
+                
+                layer.add(arrow);
+
+                function setRotation() {
+                    let minutes = new Date().getHours()*60  + new Date().getMinutes();
+                    arrow.rotation(minutes * 0.25);
+                    layer.draw();
+                };
+                
+                setInterval(setRotation(), 60000);
+                
                 for(let i = 0;i<sortedDatesForSircle.length;i++){
                     sortedDatesForSircle[i].forEach(function(data){
                         var arc = new Konva.Arc({
@@ -130,9 +139,11 @@
                             angle: (data.end-data.start)/4,
                             fill: data.date.colorInHex,
                             stroke: 'black',
-                            strokeWidth: 4,
+                            strokeWidth: 2,
+                            cornerRadius:20,
                             rotation: data.start/4-90
                         });
+                        
                         arc.on('mouseover', function(event) {
                             var tooltip = new Konva.Label({
                                 x: event.evt.offsetX,
@@ -171,7 +182,8 @@
                         
                     })
                 }
-                layer.add(text)
+                
+                
                 stage.add(layer);
                 
             }
