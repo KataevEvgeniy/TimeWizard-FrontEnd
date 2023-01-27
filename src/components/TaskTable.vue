@@ -8,20 +8,26 @@
         v-for="post in posts" 
         :key="post"
          >
-            <div class="name">> {{post.title}} </div>
-            
-            <div class="definition">> {{post.definition}}</div>
-            <div class="date">>
-                {{ post.startDate < this.$store.state.selectedDay.date ? new Date(post.startDate).toDateString().slice(3,10) : "" }} 
-                {{new Date(post.startDate).toTimeString().slice(0,5)}} - 
-                {{ (post.endDate - this.$store.state.selectedDay.date) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }} 
-                {{new Date(post.endDate).toTimeString().slice(0,5)}}</div>
-            <span v-if="post.completed == null"> 
-                <button @click="taskTemplate.completed = true; updateTask(post)">Выполнено</button>
-                <button @click="taskTemplate.completed = false; updateTask(post)">Провалено</button>
+            <div class="task_body">
+                <div class="name">> {{post.title}} </div>
                 
-            </span>
-            <button @click="deleteTaskOnServer(post)">Удалить</button>
+                <div class="definition">> {{post.definition}}</div>
+                
+                <div class="date">>
+                    {{ post.startDate < this.$store.state.selectedDay.date ? new Date(post.startDate).toDateString().slice(3,10) : "" }} 
+                    {{new Date(post.startDate).toTimeString().slice(0,5)}} - 
+                    {{ (post.endDate - this.$store.state.selectedDay.date) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }} 
+                    {{new Date(post.endDate).toTimeString().slice(0,5)}}
+                </div>
+            </div>
+            <div class="task_menu">
+                <span v-if="post.completed == null" class="menu_button"> 
+                    <button @click="taskTemplate.completed = true; updateTask(post) " >Выполнено</button>
+                    <button @click="taskTemplate.completed = false; updateTask(post)" >Провалено</button>
+                    
+                </span>
+                <button @click="deleteTaskOnServer(post)" class="menu_button">Удалить</button>
+            </div>
         </div>
         <span class="create_form_box">
             <form @submit.prevent class="task_form" >
@@ -185,7 +191,7 @@
             
             deleteTask(task){
                 let tempTask = task;
-                tempTask1.completed = this.taskTemplate.completed;
+                tempTask.completed = this.taskTemplate.completed;
                 this.deleteTaskOnServer(tempTask);
             },
             async deleteTaskOnServer(data){
@@ -219,10 +225,15 @@
         user-select: contain;
         border: 1px solid;
         border-color: grey;
+        display: flex;
+        flex-direction: row;
     }
+
+    
     .task_exam:hover{
         border-color: red;
         transform: scale(1.05);
+        
     }
 	.task_form{
         
@@ -245,7 +256,19 @@
     .definition,.date{
         font-size: 16px;
     }
-    
+    .task_body{
+        
+        width: 85%;
+    }
+    .task_menu{
+        width: 15%;
+    }
+    .menu_button{
+        
+        
+        
+        
+    }
     .create_form_box{
         display: flex;
         flex-direction: row;
