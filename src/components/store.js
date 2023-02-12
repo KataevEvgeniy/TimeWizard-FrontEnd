@@ -5,7 +5,13 @@ export const useStore = createStore({
     state: {
         visible: true,
         count: 0,
-        taskTableArray: [],
+        taskTableArray: {
+            singly:[],
+            daily:[],
+            weekly:[],
+            monthly:[],
+            yearly:[]
+        },
         taskInThisDay: [],
         selectedDay: new Date(), 
     },
@@ -29,7 +35,7 @@ export const useStore = createStore({
             "Access-Control-Allow-Origin": "*"}})
             .then((response) => {
                 
-                this.commit('setTaskTableArray',response.data);
+                this.commit('setTaskTableArray',sort(response.data));
                 //localStorage.setItem("tasks", JSON.stringify(this.taskTableArray));
                 console.log(response);
             })
@@ -38,6 +44,28 @@ export const useStore = createStore({
                 
             });
             
+            function sort(array){
+                let sortedArray = {
+                    singly:[],
+                    daily:[],
+                    weekly:[],
+                    monthly:[],
+                    yearly:[]
+                };
+                array.forEach(elem => {
+                    if (elem.timeUnit == 'never')
+                        sortedArray.singly.push(elem);
+                    else if (elem.timeUnit == 'day')
+                        sortedArray.daily.push(elem);  
+                    else if (elem.timeUnit == 'week')
+                        sortedArray.weekly.push(elem);
+                    else if (elem.timeUnit == 'month')
+                        sortedArray.monthly.push(elem);
+                    else if (elem.timeUnit == 'year')
+                        sortedArray.yearly.push(elem);
+                });
+                return sortedArray;
+            }
         },
         showMessage(state,{messageText,color}){
             var errorMessage = document.createElement("div");

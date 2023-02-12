@@ -46,7 +46,15 @@
                         @input="taskTemplate.definition = $event.target.value" 
                         maxlength="500" 
                         class="definition_input"></textarea><br>
-                    <input :value="taskTemplate.colorInHex" @input="taskTemplate.colorInHex = $event.target.value" type="color"/><br>
+                    <input :value="taskTemplate.colorInHex" @input="taskTemplate.colorInHex = $event.target.value" type="color"/>
+                    <input v-show="taskTemplate.timeUnit != 'never'" min=1 :value="taskTemplate.frequency" @input="taskTemplate.frequency = $event.target.value" type="number"/>
+                    <select :value="taskTemplate.timeUnit" @input="taskTemplate.timeUnit = $event.target.value">
+                        <option value="never">never</option>
+                        <option value="day">day</option>
+                        <option value="week">week</option>
+                        <option value="month">month</option>
+                        <option value="year">year</option>
+                    </select><br>
                     <span style="margin-left: 10px">
                         <input :value="taskTemplate.startDate.date" @input="taskTemplate.startDate.date = $event.target.value"  type="date"/>
                         <input :value="taskTemplate.startDate.time" @input="taskTemplate.startDate.time = $event.target.value"  type="time" >
@@ -83,11 +91,16 @@
                     endDate:this.getCurrentDate(1),
                     completed: null,
                     colorInHex: "#FFFFFF",
+                    frequency:1,
+                    timeUnit:"never",
+                    
                     
                     rollBack(){
                         this.title = '';
                         this.definition = '';
                         this.completed = null;
+                        this.frequency = 1;
+                        this.timeUnit = "never";
                         
                     }
                 },
@@ -121,6 +134,8 @@
                     endDate: new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time),
                     completed: null,
                     colorInHex: this.taskTemplate.colorInHex,
+                    frequency: this.taskTemplate.frequency,
+                    timeUnit: this.taskTemplate.timeUnit,
                 }
                 if(newTask.startDate > newTask.endDate){
                     this.$store.dispatch('showMessage',{messageText:'Task cannot end before it starts',color:'red'})
@@ -128,8 +143,7 @@
                 }
                 
                 await this.createTaskOnServer(newTask);
-                this.taskTemplate.rollBack();
-                this.$store.dispatch('getAllTasks');
+                
                 
             },
             getMainGradient(color) {
@@ -139,6 +153,8 @@
                 await axios.post("http://localhost:8081/taskScheduler/saveTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
+                        this.taskTemplate.rollBack();
+                        this.$store.dispatch('getAllTasks');
                         console.log(response);//TODO delete this
                     })
                     .catch(function (error) {
@@ -154,7 +170,7 @@
                 };
             },
             defineTasksOfDay(selectedDate){
-                let allTasks = this.$store.getters.taskTableArray;
+                let allTasks = this.$store.getters.taskTableArray.singly;
                 let taskInThisDay = [];
                 allTasks.forEach((item,index)=>{
                     if(roundDate(item.startDate) <= selectedDate && selectedDate <= roundDate(item.endDate) )
