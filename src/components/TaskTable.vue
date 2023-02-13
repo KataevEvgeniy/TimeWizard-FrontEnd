@@ -12,7 +12,7 @@
                 <div class="name">> {{post.title}} </div>
                 
                 <div class="definition">> {{post.definition}}</div>
-                
+                <div>{{ post.timeUnit + " "  + post.frequency }}</div>
                 <div class="date">>
                     {{ post.startDate < this.$store.state.selectedDay.date ? new Date(post.startDate).toDateString().slice(3,10) : "" }} 
                     {{new Date(post.startDate).toTimeString().slice(0,5)}} - 
@@ -170,12 +170,37 @@
                 };
             },
             defineTasksOfDay(selectedDate){
-                let allTasks = this.$store.getters.taskTableArray.singly;
+                let singlyTasks = this.$store.getters.taskTableArray.singly;
+                let dailyTasks = this.$store.getters.taskTableArray.daily;
+                let weeklyTasks = this.$store.getters.taskTableArray.weekly;
+                
+                
                 let taskInThisDay = [];
-                allTasks.forEach((item,index)=>{
+                singlyTasks.forEach((item)=>{
                     if(roundDate(item.startDate) <= selectedDate && selectedDate <= roundDate(item.endDate) )
-                        taskInThisDay.push(allTasks[index]);
-                })
+                        taskInThisDay.push(item);
+                });
+                dailyTasks.forEach((item)=>{
+                    let dayInMillis = 86400000;
+                    let deltaDays = Math.round((selectedDate - item.startDate)/dayInMillis) + 1 ;
+                    if((deltaDays % item.frequency == 0 || deltaDays == 0)  && deltaDays >= 0){
+                        let cloneItem = {...item}
+                        cloneItem.startDate += dayInMillis * deltaDays;
+                        cloneItem.endDate += dayInMillis * deltaDays;
+                        taskInThisDay.push(cloneItem);
+                    }
+                });
+                weeklyTasks.forEach((item)=>{
+                    let weekInMillis = 604800000;
+                    let deltaWeeks = Math.round((selectedDate + 86400000 - item.startDate)/weekInMillis) ;
+                    if(new Date(selectedDate).getDay() == new Date(item.startDate).getDay() && deltaWeeks >= 0 && deltaWeeks % item.frequency == 0){
+                        let cloneItem = {...item}
+                        cloneItem.startDate += weekInMillis * deltaWeeks;
+                        cloneItem.endDate += weekInMillis * deltaWeeks;
+                        taskInThisDay.push(cloneItem);
+                    }
+                });
+                
                 taskInThisDay.sort((a,b)=>(a.startDate - b.endDate));
                 this.$store.commit('taskInThisDay',taskInThisDay);
                 this.posts = this.$store.getters.taskInThisDay;
