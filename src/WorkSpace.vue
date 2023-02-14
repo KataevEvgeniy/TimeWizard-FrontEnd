@@ -69,7 +69,7 @@
                 let minutesInDay = 1440;
                 let minArcRadius = 70;
                 let inputDates = [];
-                let selectedDay = this.$store.getters.selectedDay.date;
+                let selectedDay = this.$store.getters.selectedDay.startDateTime;
                 
                 //let inputDates = [{start:50,end:70},{start:400,end:500},{start:60,end:65},{start:500,end:700},{start:1,end:30},{start:40,end:80},{start:1000,end:1100},{start:900,end:1440}]
                 dates.forEach(function(date){

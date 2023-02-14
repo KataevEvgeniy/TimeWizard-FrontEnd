@@ -14,9 +14,9 @@
                 <div class="definition">> {{post.definition}}</div>
                 <div>{{ post.timeUnit + " "  + post.frequency }}</div>
                 <div class="date">>
-                    {{ post.startDate < this.$store.state.selectedDay.date ? new Date(post.startDate).toDateString().slice(3,10) : "" }} 
+                    {{ post.startDate < this.$store.state.selectedDay.startDateTime ? new Date(post.startDate).toDateString().slice(3,10) : "" }} 
                     {{new Date(post.startDate).toTimeString().slice(0,5)}} - 
-                    {{ (post.endDate - this.$store.state.selectedDay.date) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }} 
+                    {{ (post.endDate - this.$store.state.selectedDay.startDateTime) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }} 
                     {{new Date(post.endDate).toTimeString().slice(0,5)}}
                 </div>
             </div>
@@ -108,7 +108,7 @@
             }
         },
         mounted() {
-            this.defineTasksOfDay(this.$store.getters.selectedDay.date.getTime());
+            this.defineTasksOfDay(this.$store.getters.selectedDay);
         },
         computed: {
             ...mapGetters(['selectedDay']),
@@ -117,10 +117,10 @@
         },
         watch: {
             selectedDay() {
-                this.defineTasksOfDay(this.$store.getters.selectedDay.date.getTime());
+                this.defineTasksOfDay(this.$store.getters.selectedDay);
             },
             taskTableArray(){
-                this.defineTasksOfDay(this.$store.getters.selectedDay.date.getTime());
+                this.defineTasksOfDay(this.$store.getters.selectedDay);
             },
             
             
@@ -175,15 +175,15 @@
                 let weeklyTasks = this.$store.getters.taskTableArray.weekly;
                 let monthlyTasks = this.$store.getters.taskTableArray.monthly;
                 let yearlyTasks = this.$store.getters.taskTableArray.yearly;
-
+                console.log(selectedDate)
                 let taskInThisDay = [];
                 singlyTasks.forEach((item)=>{
-                    if(roundDate(item.startDate) <= selectedDate && selectedDate <= roundDate(item.endDate) )
+                    if(roundDate(item.startDate) <= selectedDate.startDateTime.getTime() && selectedDate.startDateTime.getTime() <= roundDate(item.endDate) )
                         taskInThisDay.push(item);
                 });
                 dailyTasks.forEach((item)=>{
                     let dayInMillis = 86400000;
-                    let deltaDays = Math.round((selectedDate - item.startDate)/dayInMillis) + 1 ;
+                    let deltaDays = Math.round((selectedDate.startDateTime.getTime() - item.startDate)/dayInMillis) + 1 ;
                     if((deltaDays % item.frequency == 0 || deltaDays == 0)  && deltaDays >= 0){
                         let cloneItem = {...item}
                         cloneItem.startDate += dayInMillis * deltaDays;
@@ -193,8 +193,8 @@
                 });
                 weeklyTasks.forEach((item)=>{
                     let weekInMillis = 604800000;
-                    let deltaWeeks = Math.round((selectedDate + 86400000 - item.startDate)/weekInMillis) ;
-                    if(new Date(selectedDate).getDay() == new Date(item.startDate).getDay() && deltaWeeks >= 0 && deltaWeeks % item.frequency == 0){
+                    let deltaWeeks = Math.round((selectedDate.endDateTime.getTime() - item.startDate)/weekInMillis) ;
+                    if(selectedDate.startDateTime.getDay() == new Date(item.startDate).getDay() && deltaWeeks >= 0 && deltaWeeks % item.frequency == 0){
                         let cloneItem = {...item}
                         cloneItem.startDate += weekInMillis * deltaWeeks;
                         cloneItem.endDate += weekInMillis * deltaWeeks;
@@ -202,10 +202,10 @@
                     }
                 });
                 monthlyTasks.forEach((item)=>{
-                    let localSelectedDate = new Date(selectedDate + 86400000);
+                    let localSelectedDate = selectedDate.endDateTime;
                     let localStartDate = new Date(item.startDate)
                     let deltaMonthInMonth = (localSelectedDate.getFullYear()-localStartDate.getFullYear())*12 + (localSelectedDate.getMonth() - localStartDate.getMonth());
-                    if(new Date(selectedDate).getDate() == new Date(item.startDate).getDate() && deltaMonthInMonth >= 0 && deltaMonthInMonth % item.frequency == 0){
+                    if(selectedDate.startDateTime.getDate() == new Date(item.startDate).getDate() && deltaMonthInMonth >= 0 && deltaMonthInMonth % item.frequency == 0){
                         let cloneItem = {...item}
                         cloneItem.startDate = new Date(cloneItem.startDate).setMonth(new Date(cloneItem.startDate).getMonth() + deltaMonthInMonth);
                         cloneItem.endDate = new Date(cloneItem.endDate).setMonth(new Date(cloneItem.endDate).getMonth() + deltaMonthInMonth);
@@ -213,7 +213,7 @@
                     }
                 });
                 yearlyTasks.forEach((item)=>{
-                    let localSelectedDate = new Date(selectedDate);
+                    let localSelectedDate = selectedDate.startDateTime;
                     let localStartDate = new Date(item.startDate);
                     let deltaYears = localSelectedDate.getFullYear()-localStartDate.getFullYear();
                     if(localSelectedDate.getDate() == localStartDate.getDate() && localSelectedDate.getMonth() == localStartDate.getMonth() && deltaYears >= 0 && deltaYears % item.frequency == 0){

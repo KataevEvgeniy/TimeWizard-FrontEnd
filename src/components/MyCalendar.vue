@@ -1,7 +1,7 @@
 <template >
   <div id="calendar">
     <div id="date_widget">
-      <div style="font-size: 90px;">{{ new Date(this.$store.state.selectedDay.date).getDate() }}</div>
+      <div style="font-size: 90px;">{{ new Date(this.$store.state.selectedDay.startDateTime).getDate() }}</div>
       <div style="font-size: 40px;">{{ this.$store.state.selectedDay.monthName }}</div>
     </div>
     <div id="calendar_box">
@@ -15,7 +15,7 @@
           <th v-for="day in daysOfWeek" :key="day">{{ day }}</th>
         </tr>
         <tr v-for="(week, index) in calendar" :key="index">
-          <td @click="setSelectedDate(day)" v-for="day in week" :key="day.date.getDate()" >{{ day.date.getDate() }}</td> 
+          <td @click="setSelectedDate(day)" v-for="day in week" :key="day.startDateTime.getDate()" >{{ day.startDateTime.getDate() }}</td> 
           <!-- :class="{ 'today': day.isToday }" -->
         </tr>
       </table>
@@ -38,7 +38,8 @@
     mounted() {
       this.generateCalendar();
       this.$store.state.selectedDay = {
-          date: new Date(this.getYear(),this.getMonth(),new Date().getDate()),
+          startDateTime: new Date(this.getYear(),this.getMonth(),new Date().getDate()),
+          endDateTime: new Date(this.getYear(),this.getMonth(),new Date().getDate(),24),
           monthName: this.months[(new Date()).getMonth()],
         }
     },
@@ -57,7 +58,8 @@
           let week = [];
           for(let i = 1; i <= 7; i++){
             week.push({
-              date: firstDay,
+              startDateTime: firstDay,
+              endDateTime: new Date(firstDay + dayInMillis),
               monthName: this.months[firstDay.getMonth()], 
             });
             firstDay = new Date(firstDay.getTime() + dayInMillis);
