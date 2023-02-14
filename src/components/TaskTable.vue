@@ -173,8 +173,9 @@
                 let singlyTasks = this.$store.getters.taskTableArray.singly;
                 let dailyTasks = this.$store.getters.taskTableArray.daily;
                 let weeklyTasks = this.$store.getters.taskTableArray.weekly;
-                
-                
+                let monthlyTasks = this.$store.getters.taskTableArray.monthly;
+                let yearlyTasks = this.$store.getters.taskTableArray.yearly;
+
                 let taskInThisDay = [];
                 singlyTasks.forEach((item)=>{
                     if(roundDate(item.startDate) <= selectedDate && selectedDate <= roundDate(item.endDate) )
@@ -200,8 +201,29 @@
                         taskInThisDay.push(cloneItem);
                     }
                 });
-                
-                taskInThisDay.sort((a,b)=>(a.startDate - b.endDate));
+                monthlyTasks.forEach((item)=>{
+                    let localSelectedDate = new Date(selectedDate + 86400000);
+                    let localStartDate = new Date(item.startDate)
+                    let deltaMonthInMonth = (localSelectedDate.getFullYear()-localStartDate.getFullYear())*12 + (localSelectedDate.getMonth() - localStartDate.getMonth());
+                    if(new Date(selectedDate).getDate() == new Date(item.startDate).getDate() && deltaMonthInMonth >= 0 && deltaMonthInMonth % item.frequency == 0){
+                        let cloneItem = {...item}
+                        cloneItem.startDate = new Date(cloneItem.startDate).setMonth(new Date(cloneItem.startDate).getMonth() + deltaMonthInMonth);
+                        cloneItem.endDate = new Date(cloneItem.endDate).setMonth(new Date(cloneItem.endDate).getMonth() + deltaMonthInMonth);
+                        taskInThisDay.push(cloneItem);
+                    }
+                });
+                yearlyTasks.forEach((item)=>{
+                    let localSelectedDate = new Date(selectedDate);
+                    let localStartDate = new Date(item.startDate);
+                    let deltaYears = localSelectedDate.getFullYear()-localStartDate.getFullYear();
+                    if(localSelectedDate.getDate() == localStartDate.getDate() && localSelectedDate.getMonth() == localStartDate.getMonth() && deltaYears >= 0 && deltaYears % item.frequency == 0){
+                        let cloneItem = {...item}
+                        cloneItem.startDate = new Date(cloneItem.startDate).setFullYear(new Date(cloneItem.startDate).getFullYear() + deltaYears);
+                        cloneItem.endDate = new Date(cloneItem.endDate).setFullYear(new Date(cloneItem.endDate).getFullYear() + deltaYears);
+                        taskInThisDay.push(cloneItem);
+                    }
+                });
+                taskInThisDay.sort((a,b)=>(a.startDate - b.startDate));
                 this.$store.commit('taskInThisDay',taskInThisDay);
                 this.posts = this.$store.getters.taskInThisDay;
 
