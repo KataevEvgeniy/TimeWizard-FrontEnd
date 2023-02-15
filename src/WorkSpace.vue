@@ -8,20 +8,9 @@
         </div>
         <div>
             <clock_donut></clock_donut>
-            <div id="clock_donut1"></div>
             <calendar></calendar>
-            <div class="doughnut_box">
-                <div class="doughnut_left">
-                    <mychart/>
-                </div>
-                <div class="doughnut_right" >
-                    <mychart/>
-                </div>
-            </div>
-            
             <div class="task_tables">
-                <mytask/>
-
+                <task_list></task_list>
             </div>
         </div>
     </div>
@@ -29,15 +18,13 @@
 
 <script>
     /* eslint-disable */
-    import  mychart from './components/MyChart'
-    import mytask from './components/TaskList'
+    import task_list from './components/TaskList'
     import calendar from "./components/MyCalendar.vue"
     import clock_donut from './components/ClockDonut.vue'
 
     export default {
         components: {
-            mychart,
-            mytask,
+            task_list,
             calendar,
             clock_donut
         },
