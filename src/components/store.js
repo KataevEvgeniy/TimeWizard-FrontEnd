@@ -5,7 +5,7 @@ export const useStore = createStore({
     state: {
         visible: true,
         count: 0,
-        taskTableArray: {
+        taskList: {
             singly:[],
             daily:[],
             weekly:[],
@@ -22,8 +22,8 @@ export const useStore = createStore({
         setSelectedDay(state, date){
             state.selectedDay = date;
         },
-        setTaskTableArray(state,array){
-            state.taskTableArray = array;
+        setTaskList(state,array){
+            state.taskList = array;
         },
         taskInThisDay(state,tasks){
             state.taskInThisDay = tasks;
@@ -35,8 +35,8 @@ export const useStore = createStore({
             "Access-Control-Allow-Origin": "*"}})
             .then((response) => {
                 
-                this.commit('setTaskTableArray',sort(response.data));
-                //localStorage.setItem("tasks", JSON.stringify(this.taskTableArray));
+                this.commit('setTaskList',sort(response.data));
+                //localStorage.setItem("tasks", JSON.stringify(this.TaskListArray));
                 console.log(response);
             })
             .catch(function (error) {
@@ -94,8 +94,8 @@ export const useStore = createStore({
         selectedDay(state) {
             return state.selectedDay;
         },
-        taskTableArray(state){
-            return state.taskTableArray;
+        taskList(state){
+            return state.taskList;
         },
         taskInThisDay(state){
             return state.taskInThisDay;
@@ -105,8 +105,8 @@ export const useStore = createStore({
         selectedDay(){
             return this.$store.getters.selectedDay;
         },
-        taskTableArray(){
-            return this.$store.getters.taskTableArray;
+        taskListArray(){
+            return this.$store.getters.taskList;
         },
         taskInThisDay(){
             return this.$store.getters.taskInThisDay;
