@@ -31,7 +31,7 @@ export const useStore = createStore({
     },
     actions:{
         async getAllTasks(){
-            await axios.get("http://localhost:8081/taskScheduler/getAllTasks",{headers:{'Authorization': localStorage.getItem('token'),
+            await axios.get("http://localhost:8081/taskScheduler/getAllCallendarTasks",{headers:{'Authorization': localStorage.getItem('token'),
             "Access-Control-Allow-Origin": "*"}})
             .then((response) => {
                 

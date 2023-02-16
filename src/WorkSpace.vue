@@ -2,11 +2,14 @@
 <template>
     <div   style="text-align: center;" class="window">
         <div class="head" >
-            <button >Calendar</button>
-            <button >Table</button>
+            <button @click="selectedPageName = 'Calendar'">Calendar</button>
+            <button @click="selectedPageName = 'Table'">Table</button>
             <button @click="this.$store.dispatch('getAllTasks')">Get Request</button>
         </div>
-        <div>
+        <div v-if="selectedPageName == 'Table'">
+            <task_table></task_table>
+        </div>
+        <div v-if="selectedPageName == 'Calendar'">
             <clock_donut></clock_donut>
             <calendar></calendar>
             <div class="task_tables">
@@ -21,16 +24,17 @@
     import task_list from './components/TaskList'
     import calendar from "./components/MyCalendar.vue"
     import clock_donut from './components/ClockDonut.vue'
-
+    import task_table from './components/TaskTable.vue'
     export default {
         components: {
+            task_table,
             task_list,
             calendar,
             clock_donut
         },
         data() {
             return {
-                selectedPage:"Workspace",
+                selectedPageName:"Calendar",
                 u:0,
                 User: {
                     username: '',

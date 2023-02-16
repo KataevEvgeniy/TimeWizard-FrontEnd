@@ -150,7 +150,7 @@
                 return `linear-gradient(114deg, #222629 60%, ${color} 95%)`;
             },
             async createTaskOnServer(data){
-                await axios.post("http://localhost:8081/taskScheduler/saveTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post("http://localhost:8081/taskScheduler/saveCalendarTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         this.taskTemplate.rollBack();
