@@ -240,7 +240,7 @@
                 
             },
             async updateTaskOnServer(data){
-                await axios.post("http://localhost:8081/taskScheduler/updateTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post("http://localhost:8081/taskScheduler/updateCalendarTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -258,7 +258,7 @@
                 this.deleteTaskOnServer(tempTask);
             },
             async deleteTaskOnServer(data){
-                await axios.post("http://localhost:8081/taskScheduler/deleteTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post("http://localhost:8081/taskScheduler/deleteCalendarTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this

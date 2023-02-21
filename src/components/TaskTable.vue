@@ -5,7 +5,7 @@
             class="column" 
             :key="i" 
             v-for="(column, i) in array"
-            @drop="drop(column.tasks)" 
+            @drop="drop(column.tasks,i)" 
             @dragover.prevent
             >
             <div 
@@ -24,7 +24,7 @@
                 maxlength="500"
                 class="task_template_text">
             </textarea>
-            <button @click="createTask(column.taskTemplate)">Add Task</button>
+            <button @click="column.taskTemplate.columnNumber = i; createTask(column.taskTemplate)">Add Task</button>
         </div>
     </div>
 </template>
@@ -50,14 +50,15 @@
                 this.select.task = task;
                 this.select.sourceColumn = sourceColumn;
             },
-            drop(column) {
+            drop(column,index) {
                 const task = this.select.task;
                 const sourceColumn = this.select.sourceColumn;
                 sourceColumn.splice(sourceColumn.indexOf(task), 1);
-                column.push(task)
+                task.columnNumber = index;
+                column.push(task);
+                this.updateTask(task);
             },
             async createTask(data){
-                console.log(data)
                 await axios.post("http://localhost:8081/taskScheduler/saveTableTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
@@ -67,12 +68,24 @@
                         console.log(error);
                 });
             },
+            async updateTask(data){
+                await axios.post("http://localhost:8081/taskScheduler/updateTableTask", data,{headers:{'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')}})
+                    .then((response) => {
+                        console.log(response);//TODO delete this
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                });
+                
+            },
             async getAllTasks(){
                 await axios.get("http://localhost:8081/taskScheduler/getAllTableTasks",{headers:{'Authorization': localStorage.getItem('token'),
                     "Access-Control-Allow-Origin": "*"}})
                     .then((response) => {
                         console.log(response);
                         let arra = response.data
+                        this.array = []
                         arra.forEach((task) => {
                             if(this.array[task.columnNumber] == null){
                                 this.array[task.columnNumber] = {
