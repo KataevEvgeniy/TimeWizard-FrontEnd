@@ -8,13 +8,22 @@
             @drop="drop(column.tasks,i)" 
             @dragover.prevent
             >
-            <div 
+            <div
                 class="task" 
                 :key="j" 
                 v-for="(task,j) in column.tasks"
                 draggable="true" 
                 @dragstart="dragStart(task,column.tasks)"
-                >{{ task.text }}
+                @mouseover="showMenu('menu' + i + j)" @mouseleave="hideMenu('menu' + i + j)"
+                >
+                <div 
+                    
+                    >{{ task.text }}
+                </div>
+                <div :id="'menu' + i + j" style="display: none;">
+                    <button>delete</button>
+                    <button>change</button>
+                </div>
             </div>
             <textarea 
                 oninput="this.style.height = (this.scrollHeight - 4) + 'px';"
@@ -46,6 +55,13 @@
             }
         },
         methods: {
+            showMenu(id){
+                document.getElementById(id).style.display="block";
+                
+            },
+            hideMenu(id){
+                document.getElementById(id).style.display="none";
+            },
             dragStart(task,sourceColumn) {
                 this.select.task = task;
                 this.select.sourceColumn = sourceColumn;
@@ -117,18 +133,23 @@
         background-color: gray;
         width: 300px;
         margin: 10px;
-        text-align: center;
+        text-align: left;
+        
     }
     .task{
         background-color: lightgray;
         width: 290px;
         margin: 5px;
+        overflow-wrap: break-word;
     }
     .task_template_text{
+        
         background-color: lightgray;
         width: 285px;
         margin: 5px;
         resize: none;
+        
     }
+    
 </style>
   
