@@ -3,6 +3,7 @@ import axios from 'axios'
 // eslint-disable-next-line
 export const useStore = createStore({
     state: {
+        
         visible: true,
         count: 0,
         taskList: {
@@ -89,6 +90,22 @@ export const useStore = createStore({
                 errorMessage.remove();
             }, 2500); 
         },
+        async checkToken(){
+            await axios.get("http://localhost:8081/taskScheduler/checkToken",{headers:{'Authorization': localStorage.getItem('token'),
+            "Access-Control-Allow-Origin": "*"}})
+            .then((response) => {
+                console.log(response);
+                if(response.data == "Token is true" && window.location.href != 'http://localhost:8080/workspace'){
+                    location.href = 'http://localhost:8080/workspace'     
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                if(window.location.href != 'http://localhost:8080/'){
+                    location.href = 'http://localhost:8080/';
+                }
+            })
+        }
     },
     getters:{
         selectedDay(state) {

@@ -1,10 +1,10 @@
 
 <template>
-    <div   style="text-align: center;" class="window">
+    <div :on-loadstart="this.$store.dispatch('checkToken')"  style="text-align: center;" class="window">
         <div class="head" >
-            <button @click="selectedPageName = 'Calendar'">Calendar</button>
-            <button @click="selectedPageName = 'Table'">Table</button>
-            <button @click="this.$store.dispatch('getAllTasks')">Get Request</button>
+            <button class="change_page_button" @click="selectedPageName = 'Calendar'">Calendar</button>
+            <button class="change_page_button" @click="selectedPageName = 'Table'">Table</button>
+            <button class="change_page_button" @click="logout()">Exit</button>
         </div>
         <div v-if="selectedPageName == 'Table'">
             <task_table></task_table>
@@ -51,19 +51,13 @@
             logout(){
                 
                 location.href = 'http://localhost:8080/';
-                //TODO Add logout function
+                localStorage.removeItem('token')
             },
         }
     }
 </script>
 
 <style>
-    td{
-        background-color: white;
-        border-radius: 13px;
-    }
-    
-
     body{
         margin: 0px;
         padding: 0px;
@@ -77,39 +71,28 @@
         position: static;
         height: 100px;
     }
-    #daysBox{
-        text-align: right;
-        
-    }
-    .doughnut_box{
-        border-radius: 10px;
-        height: 440px;
-        background-image:  url('./assets/doughnut-background.jpg');
-        background-repeat: no-repeat;
-        background-size: 100%;
-        text-align: center;
-    }
-    .doughnut_left,.doughnut_right{
-        position: static;
-        height: 93%;
-        width: 400px;
-        background-image: url('./assets/clock.png');
-        background-size: 47.5%;
-        background-repeat: no-repeat;
-        background-position: center;
-        display:inline-block;
-    }
-    .doughnut_left{
-        margin-right: 50px;
-    }
-    .doughnut_right{
-        margin-left: 50px;
-    }
     .task_tables{
         text-align: center;
         font-size: 20px;
         color: #FFFFFF;
         background-color: #222629;
     }
+    .change_page_button {
+        background: #fff;
+        color: #333;
+        border: 2px solid #333;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .change_page_button:hover {
+        background: #333;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
     
 </style>
