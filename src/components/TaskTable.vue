@@ -1,58 +1,62 @@
 <template>
     <div class="task_container">
         <button @click="getAllColumns();"></button>
-        
-        
-            <div 
-                
-                class="column" 
-                :key="i" 
-                v-for="(column, i) in columns"
-                
-                >
-                <div>{{ column.title }}</div>
-                <!-- <div
-                    @drop="drop(column.tasks,i)" 
-                    @dragover.prevent
-                    class="task" 
-                    :key="j" 
-                    v-for="(task,j) in column.tasks"
-                    draggable="true" 
-                    @dragstart="dragStart(task,column.tasks)"
-                    @mouseover="showMenu('menu' + i + j)" @mouseleave="hideMenu('menu' + i + j)"
-                    >
-                    <div>{{ task.text }}</div>
-                    <div :id="'menu' + i + j" style="display: none;">
-                        <button @click="deleteTask(task)">delete</button>
-                        <button>change</button>
-                    </div>
-                </div> -->
-                <button v-if="selectedColumn != i" @click="selectedColumn = i">Add Task</button>
-                <div v-if="selectedColumn == i">
-                    <textarea 
-                        oninput="this.style.height = (this.scrollHeight - 4) + 'px';"
-                        :value="taskTemplate.text" 
-                        placeholder="Название" 
-                        @input="taskTemplate.text = $event.target.value"  
-                        maxlength="500"
-                        class="task_template_text">
-                    </textarea>
-                    <button @click="taskTemplate.tableColumn = column; createTask(taskTemplate)">Add Task</button>
+        <div 
+        @drop="drop(column)" 
+        class="column" 
+        :key="i" 
+        v-for="(column, i) in columns"
+        @dragover.prevent>
+            <div>{{ column.title }}</div>
+            <div
+            class="task" 
+            :key="j" 
+            v-for="(task,j) in tasksMap[i]"
+            draggable="true" 
+            @dragstart="dragStart(task,tasksMap[i])"
+            @mouseover="showMenu('menu' + i + j)" @mouseleave="hideMenu('menu' + i + j)">
+                <div :id="'text' + i + j">{{ task.text }}</div>
+                <div :id="'menu' + i + j" style="display: none;">
+                    <button @click="deleteTask(task)">delete</button>
+                    <button @click="showChangeMenu(task)">change</button>
                 </div>
             </div>
-            <div>
+            <button class="creating_task_field" v-if="selectedColumn != i" @click="selectedColumn = i">Add Task</button>
+            <div  v-if="selectedColumn == i">
                 <textarea 
                     oninput="this.style.height = (this.scrollHeight - 4) + 'px';"
-                    :value="columnTemplate.title" 
+                    :value="taskTemplate.text" 
                     placeholder="Название" 
-                    @input="columnTemplate.title = $event.target.value"  
-                    maxlength="100"
+                    @input="taskTemplate.text = $event.target.value"  
+                    maxlength="500"
                     class="task_template_text">
-                </textarea><br>
-                <button @click="createColumn(columnTemplate)">Create column</button>
+                </textarea>
+                <button @click=" createTask(taskTemplate,column); ">Add Task</button>
             </div>
         </div>
-    
+        <div class="creating_column_field">
+            <textarea 
+                oninput="this.style.height = (this.scrollHeight - 4) + 'px';"
+                :value="columnTemplate.title" 
+                placeholder="Название" 
+                @input="columnTemplate.title = $event.target.value"  
+                maxlength="100"
+                class="task_template_text">
+            </textarea><br>
+            <button @click="createColumn(columnTemplate)">Create column</button>
+        </div>
+    </div>
+    <div style="display: none;"  id="creating_menu">
+        <textarea 
+            oninput="this.style.height = (this.scrollHeight - 4) + 'px';"
+            :value="selectedTask.text" 
+            placeholder="Название" 
+            @input="selectedTask.text = $event.target.value"  
+            maxlength="500"
+            class="task_template_text">
+        </textarea>
+        <button @click="updateTask(this.selectedTask); hideChangeMenu()">Change</button>
+    </div>    
 </template>
   
 <script>
@@ -65,17 +69,26 @@ import axios from 'axios'
                 tasksMap:{},
                 select:{
                     task:null,
-                    sourceColumn:[]
+                    sourceColumn:null
                 },
                 taskTemplate:{
                     tableColumn:null,
                     text:""
                 },
                 columnTemplate:{title:""},
-                selectedColumn:null,
+                selectedColumn:{},
+                selectedTask:{}
             }
         },
         methods: {
+            showChangeMenu(task){
+                this.selectedTask = task;
+                document.getElementById('creating_menu').style.display = 'block';
+            },
+            hideChangeMenu(){
+                this.selectedTask = {};
+                document.getElementById('creating_menu').style.display = 'none';
+            },
             showMenu(id){
                 document.getElementById(id).style.display="block";
                 
@@ -83,16 +96,13 @@ import axios from 'axios'
             hideMenu(id){
                 document.getElementById(id).style.display="none";
             },
-            dragStart(task,sourceColumn) {
+            dragStart(task) {
+                console.log(task)
                 this.select.task = task;
-                this.select.sourceColumn = sourceColumn;
             },
-            drop(column,index) {
+            drop(column) {
                 const task = this.select.task;
-                const sourceColumn = this.select.sourceColumn;
-                sourceColumn.splice(sourceColumn.indexOf(task), 1);
-                task.columnNumber = index;
-                column.push(task);
+                task.tableColumn = column
                 this.updateTask(task);
             },
             async createColumn(column){
@@ -104,6 +114,7 @@ import axios from 'axios'
                     .catch(function (error) {
                         console.log(error);
                 });
+                this.getAllColumns();
             },
             async updateColumn(column){
                 await axios.post("http://localhost:8081/taskScheduler/updateTableColumn", column,{headers:{'Content-Type': 'application/json',
@@ -114,6 +125,7 @@ import axios from 'axios'
                     .catch(function (error) {
                         console.log(error);
                 });
+                this.getAllColumns();
             },
             async deleteColumn(column){
                 await axios.post("http://localhost:8081/taskScheduler/deleteTableColumn", column,{headers:{'Content-Type': 'application/json',
@@ -124,6 +136,7 @@ import axios from 'axios'
                     .catch(function (error) {
                         console.log(error);
                 });
+                this.getAllColumns();
             },
             async getAllColumns(){
                 await axios.get("http://localhost:8081/taskScheduler/getAllTableColumns",{headers:{'Authorization': localStorage.getItem('token'),
@@ -140,7 +153,8 @@ import axios from 'axios'
                     
                 });
             },
-            async createTask(data){
+            async createTask(data,column){
+                data.tableColumn = column;
                 if(data.text === ""){
                     this.$store.dispatch('showMessage',{messageText:'Cannot create empty task',color:'red'})
                     return;
@@ -153,6 +167,9 @@ import axios from 'axios'
                     .catch(function (error) {
                         console.log(error);
                 });
+                this.getAllColumns();
+                data.tableColumn = null;
+                data.text = "";
             },
             async updateTask(data){
                 await axios.post("http://localhost:8081/taskScheduler/updateTableTask", data,{headers:{'Content-Type': 'application/json',
@@ -163,7 +180,7 @@ import axios from 'axios'
                     .catch(function (error) {
                         console.log(error);
                 });
-                
+                this.getAllColumns();
             },
             async deleteTask(data){
                 await axios.post("http://localhost:8081/taskScheduler/deleteTableTask", data,{headers:{'Content-Type': 'application/json',
@@ -174,7 +191,7 @@ import axios from 'axios'
                     .catch(function (error) {
                         console.log(error);
                 });
-                
+                this.getAllColumns();
             },
             getAllTasks(column,index){
                 axios.post("http://localhost:8081/taskScheduler/getAllTableTasks",column,{headers:{'Authorization': localStorage.getItem('token'),
@@ -218,6 +235,14 @@ import axios from 'axios'
         margin: 5px;
         resize: none;
         
+    }
+    #creating_menu{
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 300px;
+        background-color: grey;
+        transform: translate(-50%, -50%);
     }
     
 </style>
