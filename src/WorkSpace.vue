@@ -11,7 +11,7 @@
         </div>
         <div v-if="selectedPageName == 'Calendar'">
             <clock_donut></clock_donut>
-            <calendar></calendar>
+            <calendar style="text-align: center;"></calendar>
             <div class="task_tables">
                 <task_list></task_list>
             </div>
@@ -63,7 +63,10 @@
         padding: 0px;
         padding-bottom: 30px;
         background-color: #222629;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        
     }
+    
     .head{
         text-align: right;
         display: block;

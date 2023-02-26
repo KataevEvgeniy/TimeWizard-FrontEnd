@@ -48,7 +48,6 @@
     
     
     #main_text{
-        font-family: "Verdana", Gadget, sans-serif;
         font-weight: 700;
         text-align: center;
         font-size: 50px;

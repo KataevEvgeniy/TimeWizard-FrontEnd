@@ -1,6 +1,5 @@
 <template>
-    <div class="task_container">
-        <button @click="getAllColumns();"></button>
+    <div  class="task_container">
         <div 
         @drop="drop(column)" 
         class="column" 
@@ -80,6 +79,9 @@ import axios from 'axios'
                 selectedTask:{}
             }
         },
+        mounted(){
+            this.getAllColumns()
+        },
         methods: {
             showChangeMenu(task){
                 this.selectedTask = task;
@@ -138,8 +140,8 @@ import axios from 'axios'
                 });
                 this.getAllColumns();
             },
-            async getAllColumns(){
-                await axios.get("http://localhost:8081/taskScheduler/getAllTableColumns",{headers:{'Authorization': localStorage.getItem('token'),
+            getAllColumns(){
+                axios.get("http://localhost:8081/taskScheduler/getAllTableColumns",{headers:{'Authorization': localStorage.getItem('token'),
                     "Access-Control-Allow-Origin": "*"}})
                     .then((response) => {
                         console.log(response);
@@ -210,23 +212,28 @@ import axios from 'axios'
     };
 </script>
   
-<style>
+<style scoped>
     .task_container{
         display: inline-flex;
         
+        
+        padding: 10px;
     }
     .column{
         background-color: gray;
         width: 300px;
         margin: 10px;
         text-align: left;
-        
+        border-radius: 5px;
+        padding: 5px;
     }
     .task{
         background-color: lightgray;
         width: 290px;
         margin: 5px;
         overflow-wrap: break-word;
+        border-radius: 5px;
+        padding: 5px;
     }
     .task_template_text{
         
@@ -245,5 +252,22 @@ import axios from 'axios'
         transform: translate(-50%, -50%);
     }
     
+    button {
+        margin-top: 5px;
+        background: #fff;
+        color: #333;
+        border: 2px solid #333;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        background: #333;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+    }
 </style>
   

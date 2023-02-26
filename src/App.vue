@@ -39,5 +39,7 @@
 </script>
 
 <style>
-    
+    body{
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
 </style>
