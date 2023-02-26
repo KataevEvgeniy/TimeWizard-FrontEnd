@@ -1,13 +1,13 @@
 <template >
-    <div :on-loadstart="checkToken()"></div>
+    <div :on-loadstart="this.$store.dispatch('checkToken')"></div>
     <div  class="main_box">
         <div id="main_text">THE APPLICATION THAT WILL IMPROVE YOUR PRODUCTIVITY</div>
         <div class="white_form">
-            <button @click="changeForm"></button>
-            <div v-if="isRegister == false">
+            <button @click="changeForm">{{ typeMenu == "login" ? "Register" : "Login" }}</button>
+            <div v-if="typeMenu == 'login'">
                 <login_form/>
             </div>
-            <div v-else>
+            <div v-if="typeMenu=='register'">
                 <register_form/>
             </div>
             
@@ -16,10 +16,12 @@
 </template>
 
 <script>
-    import axios from "axios";
+    
+
     import login_form from "./LoginForm.vue"
     import register_form from "./RegisterForm.vue"
     
+
 
     export default {
         components:{
@@ -29,29 +31,15 @@
         },
         data(){
             return {
-                isRegister: false,
+                typeMenu: "login",
                 
             }
         },
         methods:{
             changeForm() {
-                this.isRegister = this.isRegister == true ? false : true;
+                this.typeMenu = this.typeMenu == "register" ? "login" : "register";
                 
-            },
-            async checkToken(){
-                await axios.get("http://localhost:8081/taskScheduler/checkToken",{headers:{'Authorization': localStorage.getItem('token'),
-                "Access-Control-Allow-Origin": "*"}})
-                .then((response) => {
-                    console.log(response);
-                    if(response.data == "Token is true")
-                        location.href = 'http://localhost:8080/workspace'
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    
-                });
-            },
-            
+            }, 
         }
     }
 </script>
