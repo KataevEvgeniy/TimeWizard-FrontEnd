@@ -108,7 +108,7 @@ import axios from 'axios'
                 this.updateTask(task);
             },
             async createColumn(column){
-                await axios.post("http://localhost:8081/taskScheduler/saveTableColumn", column,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/saveTableColumn", column,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -119,7 +119,7 @@ import axios from 'axios'
                 this.getAllColumns();
             },
             async updateColumn(column){
-                await axios.post("http://localhost:8081/taskScheduler/updateTableColumn", column,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/updateTableColumn", column,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -130,7 +130,7 @@ import axios from 'axios'
                 this.getAllColumns();
             },
             async deleteColumn(column){
-                await axios.post("http://localhost:8081/taskScheduler/deleteTableColumn", column,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/deleteTableColumn", column,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -141,7 +141,7 @@ import axios from 'axios'
                 this.getAllColumns();
             },
             getAllColumns(){
-                axios.get("http://localhost:8081/taskScheduler/getAllTableColumns",{headers:{'Authorization': localStorage.getItem('token'),
+                axios.get(this.$store.state.backendLink + "/getAllTableColumns",{headers:{'Authorization': localStorage.getItem('token'),
                     "Access-Control-Allow-Origin": "*"}})
                     .then((response) => {
                         console.log(response);
@@ -161,7 +161,7 @@ import axios from 'axios'
                     this.$store.dispatch('showMessage',{messageText:'Cannot create empty task',color:'red'})
                     return;
                 }
-                await axios.post("http://localhost:8081/taskScheduler/saveTableTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/saveTableTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -174,7 +174,7 @@ import axios from 'axios'
                 data.text = "";
             },
             async updateTask(data){
-                await axios.post("http://localhost:8081/taskScheduler/updateTableTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/updateTableTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -185,7 +185,7 @@ import axios from 'axios'
                 this.getAllColumns();
             },
             async deleteTask(data){
-                await axios.post("http://localhost:8081/taskScheduler/deleteTableTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/deleteTableTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -196,7 +196,7 @@ import axios from 'axios'
                 this.getAllColumns();
             },
             getAllTasks(column,index){
-                axios.post("http://localhost:8081/taskScheduler/getAllTableTasks",column,{headers:{'Authorization': localStorage.getItem('token'),
+                axios.post(this.$store.state.backendLink + "/getAllTableTasks",column,{headers:{'Authorization': localStorage.getItem('token'),
                 'Content-Type': 'application/json'}})
                     .then((response) => {
                         console.log(response);

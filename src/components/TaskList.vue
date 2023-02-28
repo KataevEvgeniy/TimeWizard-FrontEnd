@@ -150,7 +150,7 @@
                 return `linear-gradient(114deg, #222629 60%, ${color} 95%)`;
             },
             async createTaskOnServer(data){
-                await axios.post("http://localhost:8081/taskScheduler/saveCalendarTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/saveCalendarTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         this.taskTemplate.rollBack();
@@ -240,7 +240,7 @@
                 
             },
             async updateTaskOnServer(data){
-                await axios.post("http://localhost:8081/taskScheduler/updateCalendarTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/updateCalendarTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this
@@ -258,7 +258,7 @@
                 this.deleteTaskOnServer(tempTask);
             },
             async deleteTaskOnServer(data){
-                await axios.post("http://localhost:8081/taskScheduler/deleteCalendarTask", data,{headers:{'Content-Type': 'application/json',
+                await axios.post(this.$store.state.backendLink + "/deleteCalendarTask", data,{headers:{'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')}})
                     .then((response) => {
                         console.log(response);//TODO delete this

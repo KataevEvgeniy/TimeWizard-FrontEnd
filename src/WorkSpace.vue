@@ -50,7 +50,7 @@
         methods: {
             logout(){
                 
-                location.href = 'http://localhost:8080/';
+                location.href = this.$store.state.frontendLink;
                 localStorage.removeItem('token')
             },
         }

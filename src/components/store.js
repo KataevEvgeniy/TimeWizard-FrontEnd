@@ -3,7 +3,8 @@ import axios from 'axios'
 // eslint-disable-next-line
 export const useStore = createStore({
     state: {
-        
+        backendLink:'http://194.87.111.9:8080/TimeWizard',
+        frontendLink:'https://kataevevgeniy.github.io/TimeWizard',
         visible: true,
         count: 0,
         taskList: {
@@ -32,7 +33,7 @@ export const useStore = createStore({
     },
     actions:{
         async getAllTasks(){
-            await axios.get("http://localhost:8081/taskScheduler/getAllCallendarTasks",{headers:{'Authorization': localStorage.getItem('token'),
+            await axios.get(this.$store.state.backendLink + "/getAllCallendarTasks",{headers:{'Authorization': localStorage.getItem('token'),
             "Access-Control-Allow-Origin": "*"}})
             .then((response) => {
                 
@@ -90,19 +91,19 @@ export const useStore = createStore({
                 errorMessage.remove();
             }, 2500); 
         },
-        async checkToken(){
-            await axios.get("http://localhost:8081/taskScheduler/checkToken",{headers:{'Authorization': localStorage.getItem('token'),
+        checkToken(){
+            axios.get(this.state.backendLink + "/checkToken",{headers:{'Authorization': localStorage.getItem('token'),
             "Access-Control-Allow-Origin": "*"}})
             .then((response) => {
                 console.log(response);
-                if(response.data == "Token is true" && window.location.href != 'http://localhost:8080/workspace'){
-                    location.href = 'http://localhost:8080/workspace'     
+                if(response.data == "Token is true" && window.location.href != this.state.frontendLink + '/workspace'){
+                    location.href = this.state.frontendLink + '/workspace'     
                 }
             })
             .catch(function (error) {
                 console.log(error);
-                if(window.location.href != 'http://localhost:8080/'){
-                    location.href = 'http://localhost:8080/';
+                if(window.location.href != this.state.frontendLink){
+                    location.href = this.state.frontendLink;
                 }
             })
         }

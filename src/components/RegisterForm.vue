@@ -34,7 +34,7 @@
         methods:{
             async register(){
                 if(this.userIsTrue(this.User))
-                    await axios.post("http://localhost:8081/taskScheduler/register", this.User,{headers:{'Content-Type': 'application/json',}})
+                    await axios.post(this.$store.state.backendLink + "/register", this.User,{headers:{'Content-Type': 'application/json',}})
                     .then((response) => {
                         console.log(response);
                         localStorage.setItem('token',response.headers.authorization);
@@ -42,7 +42,7 @@
                         if(response.data == "Login is accept"){
                             useStore.dispatch('showMessage',{messageText:response.data,color:'green'})
                             setTimeout(function() {
-                                location.href = 'http://localhost:8080/workspace'
+                                location.href = this.$store.state.backendLink
                             }, 500);
                         }
                             
