@@ -32,14 +32,14 @@
         methods:{
             async login(){
                 if(this.userIsTrue(this.User))
-                    await axios.post("http://localhost:8081/taskScheduler/login", this.User,{headers:{'Content-Type': 'application/json',}})
+                    await axios.post(this.$store.state.backendLink + "/login", this.User,{headers:{'Content-Type': 'application/json',}})
                     .then((response) => {
                         console.log(response.headers);
                         localStorage.setItem('token',response.headers.authorization);
                         if(response.data == "Login is accept"){
                             useStore.dispatch('showMessage',{messageText:response.data,color:'green'})
                             setTimeout(function() {
-                                location.href = 'http://localhost:8080/workspace'
+                                location.href = this.$store.state.backendLink + '/workspace'
                             }, 500);
                         }
                     })
