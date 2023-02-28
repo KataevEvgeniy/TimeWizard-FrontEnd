@@ -4,7 +4,7 @@ import axios from 'axios'
 export const useStore = createStore({
     state: {
         backendLink:'http://194.87.111.9:8080/TimeWizard',
-        frontendLink:'https://kataevevgeniy.github.io/TimeWizard',
+        frontendLink:'https://timewizardapp.netlify.app',
         visible: true,
         count: 0,
         taskList: {
