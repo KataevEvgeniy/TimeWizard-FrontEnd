@@ -3,7 +3,7 @@ import axios from 'axios'
 // eslint-disable-next-line
 export const useStore = createStore({
     state: {
-        backendLink:'https://backatevg/timewizard',//http://localhost:8081/taskScheduler
+        backendLink:'https://backatevg/timewizard.site',//http://localhost:8081/taskScheduler
         frontendLink:'https://timewizardapp.netlify.app',//http://localhost:8080
         visible: true,
         count: 0,
