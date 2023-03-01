@@ -39,7 +39,7 @@
                         if(response.data == "Login is accept"){
                             useStore.dispatch('showMessage',{messageText:response.data,color:'green'})
                             setTimeout(function() {
-                                location.href = this.$store.state.backendLink + '/workspace'
+                                location.href = this.$store.state.frontendLink + '/workspace'
                             }, 500);
                         }
                     })
