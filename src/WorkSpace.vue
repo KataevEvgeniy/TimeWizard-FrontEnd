@@ -1,6 +1,5 @@
-
 <template>
-    <div :on-loadstart="this.$store.dispatch('checkToken')"  style="text-align: center;" class="window">
+    <div  style="text-align: center;" class="window">
         <div class="head" >
             <button class="change_page_button" @click="selectedPageName = 'Calendar'">Calendar</button>
             <button class="change_page_button" @click="selectedPageName = 'Table'">Table</button>
@@ -49,8 +48,7 @@
         },
         methods: {
             logout(){
-                
-                location.href = this.$store.state.frontendLink;
+                this.$store.state.tokenIsTrue = false;
                 localStorage.removeItem('token')
             },
         }

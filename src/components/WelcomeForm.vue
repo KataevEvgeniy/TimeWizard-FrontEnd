@@ -1,5 +1,5 @@
 <template >
-    <div :on-loadstart="this.$store.dispatch('checkToken')"></div>
+    <div></div>
     <div  class="main_box">
         <div id="main_text">THE APPLICATION THAT WILL IMPROVE YOUR PRODUCTIVITY</div>
         <div class="white_form">

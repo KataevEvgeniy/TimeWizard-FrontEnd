@@ -3,8 +3,9 @@ import axios from 'axios'
 // eslint-disable-next-line
 export const useStore = createStore({
     state: {
-        backendLink:'https://backatevg.site/timewizard',//http://localhost:8081/taskScheduler
-        frontendLink:'https://timewizardapp.netlify.app',//http://localhost:8080
+        tokenIsTrue:null,
+        backendLink:'http://localhost:8081/taskScheduler',//http://localhost:8081/taskScheduler
+        frontendLink:'http://localhost:8080',//http://localhost:8080
         visible: true,
         count: 0,
         taskList: {
@@ -96,15 +97,13 @@ export const useStore = createStore({
             "Access-Control-Allow-Origin": "*"}})
             .then((response) => {
                 console.log(response);
-                if(response.data == "Token is true" && window.location.href != this.state.frontendLink + '/workspace'){
-                    location.href = this.state.frontendLink + '/workspace'     
+                if(response.data == "Token is true"){
+                    useStore.state.tokenIsTrue = true;
                 }
             })
             .catch(function (error) {
+                useStore.state.tokenIsTrue = false;
                 console.log(error);
-                if(window.location.href != this.state.frontendLink){
-                    location.href = this.state.frontendLink;
-                }
             })
         }
     },

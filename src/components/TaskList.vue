@@ -14,9 +14,9 @@
                 <div class="definition">> {{post.definition}}</div>
                 <div>{{ post.timeUnit + " "  + post.frequency }}</div>
                 <div class="date">>
-                    {{ post.startDate < this.$store.state.selectedDay.startDateTime ? new Date(post.startDate).toDateString().slice(3,10) : "" }} 
+                    {{ post.startDate < this.$store.state.selectedDay.startDateTime ? new Date(post.startDate).toDateString().slice(3,10) : "" }}
                     {{new Date(post.startDate).toTimeString().slice(0,5)}} - 
-                    {{ (post.endDate - this.$store.state.selectedDay.startDateTime) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }} 
+                    {{ (post.endDate - this.$store.state.selectedDay.startDateTime) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }}
                     {{new Date(post.endDate).toTimeString().slice(0,5)}}
                 </div>
             </div>
@@ -66,7 +66,7 @@
             </form>
             <button class="create_button" @click="createTask"></button>
         </span>
-        <button @click="this.$store.dispatch('showMessage',{messageText:'hell',color:'red'})">click</button>  
+        <button @click="this.$store.dispatch('showMessage',{messageText:'hell',color:'red'})">click</button>
         
     </div>
 </template>
