@@ -1,8 +1,7 @@
 <template >
-    <div></div>
-    <div  class="main_box">
-        <div id="main_text">THE APPLICATION THAT WILL IMPROVE YOUR PRODUCTIVITY</div>
-        <div class="white_form">
+    <div  class="container">
+        <div id="welcome_text">THE APPLICATION THAT WILL IMPROVE YOUR PRODUCTIVITY</div>
+        <div class="form">
             <button @click="changeForm">{{ typeMenu == "login" ? "Register" : "Login" }}</button>
             <div v-if="typeMenu == 'login'">
                 <login_form/>
@@ -44,27 +43,26 @@
     }
 </script>
 
-<style>
+<style scoped>
     
     
-    #main_text{
+    #welcome_text{
         font-weight: 700;
         text-align: center;
         font-size: 50px;
         color: rgb(50, 205, 94);
-        display:inline-block;
         text-shadow: rgba(0, 0, 0,0.3) 2px 2px 2px;
         width: 520px;
+        display:inline-block;
         margin-top: 100px;
         position:static;
         margin-right: 50px;
     }
     
-    .white_form{
+    .form{
         position:static;
         display:inline-block;
         text-align: center;
-        width: 90%;
         max-width: 500px;
         min-width: 300px;
         height: 500px;
@@ -74,9 +72,11 @@
         padding: 10px;
         box-shadow: 0px 0px 5px rgba(66,66,66,.75);
     }
-    .main_box{
+    .container{
+        padding:1vw;
         display: flex;
         flex-direction: row;
         justify-content: center;
+
     }
 </style>
