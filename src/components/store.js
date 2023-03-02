@@ -5,7 +5,6 @@ export const useStore = createStore({
     state: {
         tokenIsTrue:null,
         backendLink:'http://localhost:8081/taskScheduler',//http://localhost:8081/taskScheduler
-        frontendLink:'http://localhost:8080',//http://localhost:8080
         visible: true,
         count: 0,
         taskList: {

@@ -1,19 +1,24 @@
 <template >
+
     <div :on-loadstart="this.$store.dispatch('checkToken')"></div>
     <div id="load-screen" v-if="this.$store.state.tokenIsTrue == null">
       <div class="spinner"></div>
     </div>
+
+    <dynamic-background></dynamic-background>
     <welcome-form v-if="this.$store.state.tokenIsTrue === false"></welcome-form>
     <work-space v-if="this.$store.state.tokenIsTrue === true"></work-space>
-        
+
 </template>
 
 <script>
     
     import WelcomeForm from "@/components/WelcomeForm.vue";
     import WorkSpace from "@/WorkSpace.vue";
+    import DynamicBackground from "@/components/DynamicBackground.vue";
     export default {
         components:{
+          DynamicBackground,
           WorkSpace,
           WelcomeForm
         },
@@ -28,10 +33,10 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+
     body{
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        background-color: #222629;
     }
     #load-screen {
       position: fixed;

@@ -215,17 +215,37 @@ import axios from 'axios'
 <style scoped>
     .task_container{
         display: inline-flex;
-        
-        
+        width: 100vw;
+        overflow-x:scroll;
         padding: 10px;
     }
     .column{
         background-color: gray;
         width: 300px;
+        min-width: 300px;
         margin: 10px;
         text-align: left;
         border-radius: 5px;
         padding: 5px;
+    }
+    .task_container::-webkit-scrollbar-track
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      border-radius: 10px;
+      background-color: #F5F5F5;
+    }
+
+    .task_container::-webkit-scrollbar
+    {
+      width: 12px;
+      background-color: rgba(16,16,16,0.3);
+    }
+
+    .task_container::-webkit-scrollbar-thumb
+    {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+      background-color: #555;
     }
     .task{
         background-color: lightgray;

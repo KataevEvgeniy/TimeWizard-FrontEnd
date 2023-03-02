@@ -76,7 +76,6 @@
         text-align: center;
         font-size: 20px;
         color: #FFFFFF;
-        background-color: #222629;
     }
     .change_page_button {
         background: #fff;
