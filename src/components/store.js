@@ -33,7 +33,7 @@ export const useStore = createStore({
     },
     actions:{
         async getAllTasks(){
-            await axios.get(this.$store.state.backendLink + "/getAllCallendarTasks",{headers:{'Authorization': localStorage.getItem('token'),
+            await axios.get(this.state.backendLink + "/getAllCallendarTasks",{headers:{'Authorization': localStorage.getItem('token'),
             "Access-Control-Allow-Origin": "*"}})
             .then((response) => {
                 
