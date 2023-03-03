@@ -3,7 +3,7 @@
         <input :value="User.username" @input="User.username = $event.target.value" placeholder="Username" type="text" class="white_input">
         <input :value="User.email" @input="checkEmail($event.target.value)" id="email" placeholder="Email" type="text" class="white_input">
         <input :value="User.password" @input="checkPassword($event.target.value)" id="password" placeholder="Password" type="Password" class="white_input"><br/>
-        <button @click="register"  class="white_button" >Register</button>
+        <button @click="register"  class="white_button log_button" >Register</button>
         <div id="errorPlaceholder"></div>
     </form>
 </template>
@@ -111,24 +111,5 @@
         border-radius: 14px;
         box-shadow: 0px 0px 5px rgba(66,66,66,.75);
         /* text-shadow: 0px 0px 5px rgba(66,66,66,.75); */
-    }
-    .white_button {
-        background-color:#c2c2c2;
-        border-radius:29px;
-        display:inline-block;
-        cursor:pointer;
-        color:#ffffff;
-        font-family:Arial;
-        font-size:17px;
-        padding:16px 76px;
-        text-decoration:none;
-        text-shadow:0px 1px 0px #5b8a3c;
-    }
-    .white_button:hover {
-        background-color:#ced1cd;
-    }
-    .white_button:active {
-        position:relative;
-        top:1px;
     }
 </style>

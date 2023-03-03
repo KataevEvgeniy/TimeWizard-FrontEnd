@@ -37,6 +37,7 @@
 
     body{
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
     }
     #load-screen {
       position: fixed;

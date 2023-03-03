@@ -2,14 +2,14 @@
     <div  class="container">
         <div id="welcome_text">THE APPLICATION THAT WILL IMPROVE YOUR PRODUCTIVITY</div>
         <div class="form">
-            <button @click="changeForm">{{ typeMenu == "login" ? "Register" : "Login" }}</button>
-            <div v-if="typeMenu == 'login'">
+            <button class="white_button" :style="{backgroundColor:typeMenu === 'Login'?'#333':'#fff'}" @click="typeMenu='Login'">Login</button>
+            <button class="white_button" :style="{backgroundColor:typeMenu === 'Register'?'#333':'#fff'}" @click="typeMenu='Register'">Register</button>
+            <div v-if="typeMenu == 'Login'">
                 <login_form/>
             </div>
-            <div v-if="typeMenu=='register'">
+            <div v-if="typeMenu=='Register'">
                 <register_form/>
             </div>
-            
         </div>  
     </div>
 </template>
@@ -30,13 +30,13 @@
         },
         data(){
             return {
-                typeMenu: "login",
+                typeMenu: "Login",
                 
             }
         },
         methods:{
-            changeForm() {
-                this.typeMenu = this.typeMenu == "register" ? "login" : "register";
+            changeForm(string) {
+                this.typeMenu = string;
                 
             }, 
         }
@@ -53,30 +53,56 @@
         color: rgb(50, 205, 94);
         text-shadow: rgba(0, 0, 0,0.3) 2px 2px 2px;
         width: 520px;
-        display:inline-block;
-        margin-top: 100px;
-        position:static;
-        margin-right: 50px;
+        height: initial;
+        min-width: 320px;
+      margin: auto;
     }
     
     .form{
-        position:static;
-        display:inline-block;
         text-align: center;
         max-width: 500px;
         min-width: 300px;
         height: 500px;
-        position: static;
-        background-color: whitesmoke;
+        background-color: rgb(256,256,256,0.7);
         border-radius: 14px;
         padding: 10px;
         box-shadow: 0px 0px 5px rgba(66,66,66,.75);
+      margin: auto;
     }
     .container{
-        padding:1vw;
+        padding-top: 1vw;
         display: flex;
         flex-direction: row;
         justify-content: center;
 
+        width: 100vw;
+        margin: auto;
+    }
+
+    @media screen and (max-width: 768px){
+      .container{
+        flex-direction: column;
+
+      }
+    }
+
+</style>
+
+<style>
+    .white_button {
+      margin-top: 5px;
+      background: #fff;
+      color: #333;
+      border: 2px solid #333;
+      padding: 15px 60px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .white_button:hover {
+      background: #333;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
     }
 </style>
