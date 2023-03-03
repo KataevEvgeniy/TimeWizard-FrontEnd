@@ -232,13 +232,12 @@ import axios from 'axios'
     {
       -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
       border-radius: 10px;
-      background-color: #F5F5F5;
+      background-color: rgba(63, 40, 40, 0.3);
     }
 
     .task_container::-webkit-scrollbar
     {
       width: 12px;
-      background-color: rgba(16,16,16,0.3);
     }
 
     .task_container::-webkit-scrollbar-thumb
@@ -256,12 +255,10 @@ import axios from 'axios'
         padding: 5px;
     }
     .task_template_text{
-        
         background-color: lightgray;
         width: 285px;
         margin: 5px;
         resize: none;
-        
     }
     #creating_menu{
         position: fixed;

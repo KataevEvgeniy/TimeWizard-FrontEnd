@@ -2,32 +2,29 @@
     
 	<div @submit.prevent class="tasks">
         <div  
-        :id="post.id" 
+        :id="task.id"
         class="task_exam" 
-        :style="{background: getMainGradient(post.colorInHex)}" 
-        v-for="post in posts" 
-        :key="post"
+        :style="{background: getMainGradient(task.colorInHex)}"
+        v-for="task in tasks"
+        :key="task"
          >
-            <div class="task_body">
-                <div class="name">> {{post.title}} </div>
-                
-                <div class="definition">> {{post.definition}}</div>
-                <div>{{ post.timeUnit + " "  + post.frequency }}</div>
-                <div class="date">>
-                    {{ post.startDate < this.$store.state.selectedDay.startDateTime ? new Date(post.startDate).toDateString().slice(3,10) : "" }}
-                    {{new Date(post.startDate).toTimeString().slice(0,5)}} - 
-                    {{ (post.endDate - this.$store.state.selectedDay.startDateTime) > 86400000 ? new Date(post.endDate).toDateString().slice(3,10) : "" }}
-                    {{new Date(post.endDate).toTimeString().slice(0,5)}}
-                </div>
-            </div>
-            <div class="task_menu">
-                <span v-if="post.completed == null" class="menu_button"> 
-                    <button @click="taskTemplate.completed = true; updateTask(post) " >Выполнено</button>
-                    <button @click="taskTemplate.completed = false; updateTask(post)" >Провалено</button>
-                    
-                </span>
-                <button @click="deleteTaskOnServer(post)" class="menu_button">Удалить</button>
-            </div>
+              <div class="task_body">
+                  <div class="name">> {{task.title}} </div>
+
+                  <div class="definition">> {{task.definition}}</div>
+                  <div>{{ task.timeUnit + " "  + task.frequency }}</div>
+                  <div class="date">>
+                      {{ task.startDate < this.$store.state.selectedDay.startDateTime ? new Date(task.startDate).toDateString().slice(3,10) : "" }}
+                      {{new Date(task.startDate).toTimeString().slice(0,5)}} -
+                      {{ (task.endDate - this.$store.state.selectedDay.startDateTime) > 86400000 ? new Date(task.endDate).toDateString().slice(3,10) : "" }}
+                      {{new Date(task.endDate).toTimeString().slice(0,5)}}
+                  </div>
+              </div>
+              <div class="task_menu">
+                  <button class="task_menu_btn" @click="taskTemplate.completed = true; updateTask(task) " >Выполнено</button>
+                  <button class="task_menu_btn" @click="taskTemplate.completed = false; updateTask(task)" >Провалено</button>
+                  <button class="task_menu_btn" @click="deleteTaskOnServer(task)">Удалить</button>
+              </div>
         </div>
         <span class="create_form_box">
             <form @submit.prevent class="task_form" >
@@ -55,12 +52,15 @@
                         <option value="month">month</option>
                         <option value="year">year</option>
                     </select><br>
-                    <span style="margin-left: 10px">
-                        <input :value="taskTemplate.startDate.date" @input="taskTemplate.startDate.date = $event.target.value"  type="date"/>
+                    <span>
+
                         <input :value="taskTemplate.startDate.time" @input="taskTemplate.startDate.time = $event.target.value"  type="time" >
                         &#8212;
-                        <input :value="taskTemplate.endDate.date" @input="taskTemplate.endDate.date = $event.target.value" style="margin-left: 10px" type="date"/>
-                        <input :value="taskTemplate.endDate.time" @input="taskTemplate.endDate.time = $event.target.value" type="time" >
+                        <input :value="taskTemplate.endDate.time" @input="taskTemplate.endDate.time = $event.target.value" type="time" ><br>
+                        <input :value="taskTemplate.startDate.date" @input="taskTemplate.startDate.date = $event.target.value"  type="date"/>
+                      &#8212;
+                        <input :value="taskTemplate.endDate.date" @input="taskTemplate.endDate.date = $event.target.value"  type="date"/>
+
                     </span>
                     
             </form>
@@ -80,7 +80,7 @@
         
 		data() {
             return {
-                posts: [],
+                tasks: [],
                 color1:'#0076D1',
                 
                 
@@ -225,7 +225,7 @@
                 });
                 taskInThisDay.sort((a,b)=>(a.startDate - b.startDate));
                 this.$store.commit('taskInThisDay',taskInThisDay);
-                this.posts = this.$store.getters.taskInThisDay;
+                this.tasks = this.$store.getters.taskInThisDay;
 
                 function roundDate(dateInMillis){
                     let d = new Date(dateInMillis);
@@ -291,15 +291,39 @@
         display: flex;
         flex-direction: row;
     }
+    .task_body{
 
+      width: 85%;
+    }
+    .task_menu{
+
+      display: flex;
+      flex-direction: column;
+      width: 15%;
+    }
+    .task_menu_btn{
+      height: 33.33%;
+      border:none;
+      background: none;
+      border-bottom-right-radius: 14px;
+      border-top-right-radius: 14px;
+      background: rgb(230,190,8);
+      background: radial-gradient(circle, rgba(230,190,8,1) 7%, rgba(73,78,78,0) 56%);
+    }
+    .task_menu_btn:hover{
+      transform: translateY(-2px);
+      background: rgb(230,190,8);
+      background: radial-gradient(circle, rgba(230,190,8,1) 20%, rgba(73,78,78,0) 70%);
+    }
     
     .task_exam:hover{
         border-color: red;
         transform: scale(1.05);
-        
+
     }
 	.task_form{
-        
+    padding:5px 0px;
+    padding-left: 5px;
         text-align: left;
         width: 90%;
     }
@@ -319,28 +343,17 @@
     .definition,.date{
         font-size: 16px;
     }
-    .task_body{
-        
-        width: 85%;
-    }
-    .task_menu{
-        width: 15%;
-    }
-    .menu_button{
-        
-        
-        
-        
-    }
+
     .create_form_box{
         display: flex;
+
+
         flex-direction: row;
         border-radius: 14px;
         background-color: #474B4F;
     }
     .definition_input,.name_input{
 		border: none;
-        margin-left: 10px;
         border-radius: 10px;
         margin-top: 2px;
         margin-bottom: 2px;
@@ -353,35 +366,32 @@
             linear-gradient(#474B4F,#474B4F),
             linear-gradient(#474B4F,#474B4F);
         background-position:center;
-        background-size: 50% 3px,3px 50%; 
         background-repeat:no-repeat;
+        background-color: #222629;
+        background-size: 50% 3px,3px 50%;
         border: none;
         color: white;
-        background-color: #222629;
         width: 10%;
-        margin-left: 0;
         border-bottom-right-radius: 10px;
         border-top-right-radius: 10px;
     }
     .create_button:hover{
         outline: 4px solid #474B4F;
         outline-offset: -4px;
-        
     }
     input[type="color"]{
         width: 30px;
         height: 30px;
         border: none;
         background-color: rgba(0, 0, 0, 0);
-        margin-left: 10px;
+
     }
     input[type="time"],input[type="date"] {
-        
         border: none;
         color: #d4d4d4;
         font-size: 14px;
         font-family: helvetica;
-        width: 60px;
+        width: 87px;
         height: 18px;
         background-color: rgba(0, 0, 0, 0);
     }
@@ -412,7 +422,7 @@
         display: none;
     }
     input[type="time"]::-webkit-calendar-picker-indicator {
-        display: none;
+
     }
     input[type="date"]{
         width: 95px;

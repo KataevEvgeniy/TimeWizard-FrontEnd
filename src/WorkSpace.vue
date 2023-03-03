@@ -34,17 +34,10 @@
         data() {
             return {
                 selectedPageName:"Calendar",
-                u:0,
-                User: {
-                    username: '',
-                    email: '',
-                    password: ''
-                },
             }
         },
         mounted(){
             this.$store.dispatch('getAllTasks')
-            
         },
         methods: {
             logout(){
@@ -66,9 +59,8 @@
     }
     
     .head{
-        text-align: right;
+        text-align: left;
         display: block;
-        background-color: #222629;
         position: static;
         height: 100px;
     }
