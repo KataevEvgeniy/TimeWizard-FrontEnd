@@ -3,62 +3,66 @@ import axios from 'axios'
 // eslint-disable-next-line
 export const useStore = createStore({
     state: {
-        tokenIsTrue:null,
-        backendLink:'http://localhost:8081/taskScheduler',//http://localhost:8081/taskScheduler
+        tokenIsTrue: null,
+        backendLink: 'http://localhost:8081/taskScheduler',//http://localhost:8081/taskScheduler
         visible: true,
         count: 0,
         taskList: {
-            singly:[],
-            daily:[],
-            weekly:[],
-            monthly:[],
-            yearly:[]
+            singly: [],
+            daily: [],
+            weekly: [],
+            monthly: [],
+            yearly: []
         },
         taskInThisDay: [],
-        selectedDay: new Date(), 
+        selectedDay: new Date(),
     },
-    mutations:{
-        increment (state) {
+    mutations: {
+        increment(state) {
             state.count++
         },
-        setSelectedDay(state, date){
+        setSelectedDay(state, date) {
             state.selectedDay = date;
         },
-        setTaskList(state,array){
+        setTaskList(state, array) {
             state.taskList = array;
         },
-        taskInThisDay(state,tasks){
+        taskInThisDay(state, tasks) {
             state.taskInThisDay = tasks;
         }
     },
-    actions:{
-        async getAllTasks(){
-            await axios.get(this.state.backendLink + "/getAllCallendarTasks",{headers:{'Authorization': localStorage.getItem('token'),
-            "Access-Control-Allow-Origin": "*"}})
-            .then((response) => {
-                
-                this.commit('setTaskList',sort(response.data));
-                //localStorage.setItem("tasks", JSON.stringify(this.TaskListArray));
-                console.log(response);
+    actions: {
+        async getAllTasks() {
+            await axios.get(this.state.backendLink + "/getAllCallendarTasks", {
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    "Access-Control-Allow-Origin": "*"
+                }
             })
-            .catch(function (error) {
-                console.log(error);
-                
-            });
-            
-            function sort(array){
+                .then((response) => {
+
+                    this.commit('setTaskList', sort(response.data));
+                    //localStorage.setItem("tasks", JSON.stringify(this.TaskListArray));
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+
+                });
+
+            function sort(array) {
                 let sortedArray = {
-                    singly:[],
-                    daily:[],
-                    weekly:[],
-                    monthly:[],
-                    yearly:[]
+                    singly: [],
+                    daily: [],
+                    weekly: [],
+                    monthly: [],
+                    yearly: []
                 };
                 array.forEach(elem => {
                     if (elem.timeUnit == 'never')
                         sortedArray.singly.push(elem);
                     else if (elem.timeUnit == 'day')
-                        sortedArray.daily.push(elem);  
+                        sortedArray.daily.push(elem);
                     else if (elem.timeUnit == 'week')
                         sortedArray.weekly.push(elem);
                     else if (elem.timeUnit == 'month')
@@ -69,7 +73,7 @@ export const useStore = createStore({
                 return sortedArray;
             }
         },
-        showMessage(state,{messageText,color}){
+        showMessage(state, {messageText, color}) {
             var errorMessage = document.createElement("div");
             errorMessage.style.backgroundColor = color;
             errorMessage.style.padding = "10px";
@@ -82,49 +86,53 @@ export const useStore = createStore({
             errorMessage.style.opacity = "1";
 
             errorMessage.innerHTML = messageText;
-            
+
             document.body.appendChild(errorMessage);
-            setTimeout(function(){
+            setTimeout(function () {
                 errorMessage.style.opacity = "0";
-            },1);
-            setTimeout(function() {
+            }, 1);
+            setTimeout(function () {
                 errorMessage.remove();
-            }, 2500); 
+            }, 2500);
         },
-        checkToken(){
-            axios.get(this.state.backendLink + "/checkToken",{headers:{'Authorization': localStorage.getItem('token'),
-            "Access-Control-Allow-Origin": "*"}})
-            .then((response) => {
-                console.log(response);
-                if(response.data == "Token is true"){
-                    useStore.state.tokenIsTrue = true;
+        checkToken() {
+            axios.get(this.state.backendLink + "/checkToken", {
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    "Access-Control-Allow-Origin": "*"
                 }
             })
-            .catch(function (error) {
-                useStore.state.tokenIsTrue = false;
-                console.log(error);
-            })
+                .then((response) => {
+                    console.log(response);
+                    if (response.data == "Token is true") {
+                        useStore.state.tokenIsTrue = true;
+                    }
+                })
+                .catch(function (error) {
+                    useStore.state.tokenIsTrue = false;
+                    console.log(error);
+                })
         }
     },
-    getters:{
+    getters: {
         selectedDay(state) {
             return state.selectedDay;
         },
-        taskList(state){
+        taskList(state) {
             return state.taskList;
         },
-        taskInThisDay(state){
+        taskInThisDay(state) {
             return state.taskInThisDay;
         }
     },
-    computed:{
-        selectedDay(){
+    computed: {
+        selectedDay() {
             return this.$store.getters.selectedDay;
         },
-        taskListArray(){
+        taskListArray() {
             return this.$store.getters.taskList;
         },
-        taskInThisDay(){
+        taskInThisDay() {
             return this.$store.getters.taskInThisDay;
         }
     }

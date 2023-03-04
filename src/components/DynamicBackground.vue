@@ -32,9 +32,10 @@
   z-index: -100;
 }
 
-span{
+span {
   position: absolute;
 }
+
 $animationDuration: 90s;
 $amount: 20;
 .background span {
@@ -46,9 +47,7 @@ $amount: 20;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   $colors: (
-      rgb(127, 255, 0.7)
-      rgb(255, 0, 0, 0.7)
-      rgb(255, 128, 0, 0.7)
+      rgb(127, 255, 0.7) rgb(255, 0, 0, 0.7) rgb(255, 128, 0, 0.7)
   );
   @for $i from 1 through $amount {
     &:nth-child(#{$i}) {
@@ -63,7 +62,7 @@ $amount: 20;
       animation-delay: random(($animationDuration + 10s) * 10) / 10 * -1s;
       transform-origin: (random(50) - 25) * 1vw (random(50) - 25) * 1vh;
       $x: if(random() > 0.5, -1, 1);
-      box-shadow: ($particleSize * 2 * $x) 0 ;
+      box-shadow: ($particleSize * 2 * $x) 0;
     }
   }
 }
