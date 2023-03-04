@@ -9,11 +9,8 @@
     import { mapGetters } from 'vuex';
 
     export default{
-        
         data() {
-            return{
-
-            }
+            return{}
         },
         mounted(){
             this.drawDonut(this.$store.getters.taskInThisDay)
@@ -28,7 +25,7 @@
         },
         methods:{
             drawDonut(dates){
-                var canvas = document.getElementById("clock_donut");
+                let canvas = document.getElementById("clock_donut");
 
                 let inputDates = [];
                 let selectedDay = this.$store.getters.selectedDay.startDateTime;
@@ -59,26 +56,24 @@
                     }
                     return arraysForAllRing;
                 }
-                
-                
-                
-                var stage = new Konva.Stage({
+
+
+
+                let stage = new Konva.Stage({
                     container: canvas,
                     width: 400,
                     height: 400
                 });
-                var layer = new Konva.Layer();
+                let layer = new Konva.Layer();
 
                 const arrow = new Konva.Arrow({
-                    
-                    points: [0, 0, 0, -65], // x1, y1, x2, y2
+                    points: [0, -45, 0, -65], // x1, y1, x2, y2
                     stroke: 'white',
                     x: stage.width() / 2,
                     y: stage.height() / 2,
                     rotation: 0,
                     strokeWidth: 3
                 });
-                
                 layer.add(arrow);
 
                 function setRotation() {
@@ -86,12 +81,46 @@
                     arrow.rotation(minutes * 0.25);
                     layer.draw();
                 }
-                
-                setInterval(setRotation(), 60000);
-                
+                setInterval(setRotation, 60000);
+
+                let timeText = new Konva.Text({
+                    x: 10,
+                    y: 10,
+                    fontSize: 20,
+                    fontFamily: 'Arial',
+                    fill:'white',
+                    align: 'center',
+                    width: 100,
+                });
+                timeText.x(stage.width()/2 - timeText.width()/2)
+                timeText.y(stage.height()/2 - timeText.height()/2)
+                function setTimeText(){
+                    let date = new Date();
+                    let hours = new Date().getHours();
+                    let minutes = date.getMinutes();
+                    timeText.text(hours + ':' + minutes);
+                    layer.batchDraw();
+                }
+
+                setInterval(setTimeText(), 60000);
+                layer.add(timeText);
+
                 for(let i = 0;i<sortedDatesForSircle.length;i++){
+                    let arcBackground = new Konva.Arc({
+                      x: stage.width() / 2,
+                      y: stage.height() / 2,
+                      innerRadius: 70+i*30,
+                      outerRadius: 100+i*30,
+                      angle: 360,
+                      fill: "rgb(189,189,189,0.1)",
+                      stroke: 'rgb(0,0,0,0.1)',
+                      strokeWidth: 2,
+                      cornerRadius:20,
+                      rotation: -90
+                    });
+                    layer.add(arcBackground)
                     sortedDatesForSircle[i].forEach(function(data){
-                        var arc = new Konva.Arc({
+                        let arc = new Konva.Arc({
                             x: stage.width() / 2,
                             y: stage.height() / 2,
                             innerRadius: 70+i*30,
@@ -105,7 +134,7 @@
                         });
                         
                         arc.on('mouseover', function(event) {
-                            var tooltip = new Konva.Label({
+                            let tooltip = new Konva.Label({
                                 x: event.evt.offsetX,
                                 y: event.evt.offsetY,
                                 opacity: 0.75
@@ -138,14 +167,9 @@
                             document.getElementById(data.date.id).scrollIntoView({ behavior: 'smooth', block: 'start' })
                         });
                         layer.add(arc);
-
-                        
                     })
                 }
-                
-                
                 stage.add(layer);
-                
             }
         }
     }
