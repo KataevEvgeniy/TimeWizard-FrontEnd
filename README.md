@@ -1,24 +1,12 @@
-# front-ts
+# Time Wizard
 
-## Project setup
-```
-npm install
-```
+Time Wizard - this is a web application for planning cases, as well as for conducting activities using kanban boards
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+current link: https://timewizardapp.netlify.app/
 
-### Compiles and minifies for production
-```
-npm run build
-```
+# Arhitecture
+Frontend - vue.js <br/>
+Backend - java + spring + postgresql <br/>
+Сonnection - REST api <br/>
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Backend - https://github.com/KataevEvgeniy/TimeWizard-BackEnd
