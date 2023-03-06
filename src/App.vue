@@ -32,7 +32,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style>
 
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div id="welcome_text">THE APPLICATION THAT WILL IMPROVE YOUR PRODUCTIVITY</div>
+    <div id="welcome_text"><h3>TIME WIZARD</h3>NEVER MISS A DEADLINE AGAIN</div>
     <div class="form">
       <button class="white_button" :style="{backgroundColor:typeMenu === 'Login'?'#333':'#fff'}"
               @click="typeMenu='Login'">Login
