@@ -12,7 +12,6 @@
         <div class="name">> {{ task.title }}</div>
 
         <div class="definition">> {{ task.definition }}</div>
-        <div>{{ task.timeUnit + " " + task.frequency }}</div>
         <div class="date">>
           {{
             task.startDate < this.$store.state.selectedDay.startDateTime ? new Date(task.startDate).toDateString().slice(3, 10) : ""
@@ -23,61 +22,21 @@
           }}
           {{ new Date(task.endDate).toTimeString().slice(0, 5) }}
         </div>
+        <div class="tags">
+          <span class="tag">&#8634; {{task.frequency + " " +  task.timeUnit}}</span>
+        </div>
       </div>
       <div class="task_menu">
-        <button class="task_menu_btn" @click="taskTemplate.completed = true; updateTask(task) ">Выполнено</button>
-        <button class="task_menu_btn" @click="taskTemplate.completed = false; updateTask(task)">Провалено</button>
+        <div v-if="task.completed == null && task.endDate < Date.now()">
+        <button class="task_menu_btn" @click="updateTaskCompletion(task,true) ">Выполнено</button>
+        <button class="task_menu_btn" @click="updateTaskCompletion(task,false)">Провалено</button>
+        </div>
+        <button class="task_menu_btn" v-else>Change</button>
         <button class="task_menu_btn" @click="deleteTaskOnServer(task)">Удалить</button>
       </div>
     </div>
-    <span class="create_form_box">
-      <form @submit.prevent class="task_form">
-        <textarea
-            oninput="this.style.height = (this.scrollHeight - 4) + 'px';"
-            :value="taskTemplate.title"
-            placeholder="Название"
-            @input="taskTemplate.title = $event.target.value"
-            maxlength="200"
-            class="name_input"></textarea><br>
-
-        <textarea
-            oninput="this.style.height = (this.scrollHeight - 4) + 'px';"
-            :value="taskTemplate.definition"
-            placeholder="Описание"
-            @input="taskTemplate.definition = $event.target.value"
-            maxlength="500"
-            class="definition_input"></textarea><br>
-        <input :value="taskTemplate.colorInHex" @input="taskTemplate.colorInHex = $event.target.value"
-               type="color"/>
-        <input v-show="taskTemplate.timeUnit != 'never'" min=1 :value="taskTemplate.frequency"
-               @input="taskTemplate.frequency = $event.target.value" type="number"/>
-        <select :value="taskTemplate.timeUnit" @input="taskTemplate.timeUnit = $event.target.value">
-            <option value="never">never</option>
-            <option value="day">day</option>
-            <option value="week">week</option>
-            <option value="month">month</option>
-            <option value="year">year</option>
-        </select><br>
-        <span>
-
-            <input :value="taskTemplate.startDate.time"
-                   @input="taskTemplate.startDate.time = $event.target.value" type="time">
-            &#8212;
-            <input :value="taskTemplate.endDate.time"
-                   @input="taskTemplate.endDate.time = $event.target.value" type="time"><br>
-            <input :value="taskTemplate.startDate.date"
-                   @input="taskTemplate.startDate.date = $event.target.value" type="date"/>
-          &#8212;
-            <input :value="taskTemplate.endDate.date"
-                   @input="taskTemplate.endDate.date = $event.target.value" type="date"/>
-
-        </span>
-
-        </form>
-        <button class="create_button" @click="createTask"></button>
-        </span>
     <button @click="this.$store.dispatch('showMessage',{messageText:'hell',color:'red'})">click</button>
-
+    <task-list-form :type="'create'"></task-list-form>
   </div>
 </template>
 
@@ -85,36 +44,15 @@
 //import { useStore } from './store'
 import axios from 'axios'
 import {mapGetters} from 'vuex';
+import taskListForm from "@/components/TaskListForm.vue";
 
 export default {
-
+  components:{
+    taskListForm
+  },
   data() {
     return {
       tasks: [],
-      color1: '#0076D1',
-
-
-      taskTemplate: {
-        title: '',
-        definition: '',
-        startDate: this.getCurrentDate(0),
-        endDate: this.getCurrentDate(1),
-        completed: null,
-        colorInHex: "#FFFFFF",
-        frequency: 1,
-        timeUnit: "never",
-
-
-        rollBack() {
-          this.title = '';
-          this.definition = '';
-          this.completed = null;
-          this.frequency = 1;
-          this.timeUnit = "never";
-
-        }
-      },
-
     }
   },
   mounted() {
@@ -132,56 +70,10 @@ export default {
     taskList() {
       this.defineTasksOfDay(this.$store.getters.selectedDay);
     },
-
-
   },
   methods: {
-    async createTask() {
-      const newTask = {
-        title: this.taskTemplate.title,
-        definition: this.taskTemplate.definition,
-        startDate: new Date(this.taskTemplate.startDate.date + " " + this.taskTemplate.startDate.time),
-        endDate: new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time),
-        completed: null,
-        colorInHex: this.taskTemplate.colorInHex,
-        frequency: this.taskTemplate.frequency,
-        timeUnit: this.taskTemplate.timeUnit,
-      }
-      if (newTask.startDate > newTask.endDate) {
-        this.$store.dispatch('showMessage', {messageText: 'Task cannot end before it starts', color: 'red'})
-        return;
-      }
-
-      await this.createTaskOnServer(newTask);
-
-
-    },
     getMainGradient(color) {
       return `linear-gradient(114deg, #222629 60%, ${color} 95%)`;
-    },
-    async createTaskOnServer(data) {
-      await axios.post(this.$store.state.backendLink + "/saveCalendarTask", data, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
-        }
-      })
-          .then((response) => {
-            this.taskTemplate.rollBack();
-            this.$store.dispatch('getAllTasks');
-            console.log(response);//TODO delete this
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-    },
-    getCurrentDate(appendedHour) {
-      let curDate = new Date();
-      curDate.setHours(curDate.getHours() + appendedHour);
-      return {
-        date: curDate.getFullYear() + "-" + (curDate.getMonth() + 1).toString().padStart(2, "0") + "-" + curDate.getDate().toString().padStart(2, "0"),
-        time: curDate.getHours().toString().padStart(2, "0") + ":" + curDate.getMinutes().toString().padStart(2, "0")
-      };
     },
     defineTasksOfDay(selectedDate) {
       let singlyTasks = this.$store.getters.taskList.singly;
@@ -246,10 +138,9 @@ export default {
         return new Date(d.getFullYear(), d.getMonth(), d.getDate())
       }
     },
-    async updateTask(task) {
-      let tempTask = task
-      tempTask.completed = this.taskTemplate.completed;
-      await this.updateTaskOnServer(tempTask);
+    async updateTaskCompletion(task,result) {
+      task.completed = result;
+      await this.updateTaskOnServer(task);
 
 
     },
@@ -259,21 +150,15 @@ export default {
           'Content-Type': 'application/json',
           'Authorization': localStorage.getItem('token')
         }
-      })
-          .then((response) => {
-            console.log(response);//TODO delete this
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      this.taskTemplate.rollBack();
+      }).then((response) => {
+        console.log(response);//TODO delete this
+      }).catch(function (error) {
+        console.log(error);
+      });
       this.$store.dispatch('getAllTasks')
     },
-
     deleteTask(task) {
-      let tempTask = task;
-      tempTask.completed = this.taskTemplate.completed;
-      this.deleteTaskOnServer(tempTask);
+      this.deleteTaskOnServer(task);
     },
     async deleteTaskOnServer(data) {
       await axios.post(this.$store.state.backendLink + "/deleteCalendarTask", data, {
@@ -281,14 +166,11 @@ export default {
           'Content-Type': 'application/json',
           'Authorization': localStorage.getItem('token')
         }
-      })
-          .then((response) => {
-            console.log(response);//TODO delete this
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      this.taskTemplate.rollBack();
+      }).then((response) => {
+        console.log(response);//TODO delete this
+      }).catch(function (error) {
+        console.log(error);
+      });
       this.$store.dispatch('getAllTasks');
     },
   }
@@ -296,7 +178,19 @@ export default {
 </script>
 
 <style scoped>
+.tag{
+  border-radius: 15px;
+  background-color: green;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding: 0px 6px;
+}
 
+.tags{
+  display: flex;
+  flex-direction: row;
+}
 
 textarea {
   resize: none;
@@ -317,7 +211,8 @@ textarea {
 }
 
 .task_body {
-
+  display: flex;
+  flex-direction: column;
   width: 85%;
 }
 

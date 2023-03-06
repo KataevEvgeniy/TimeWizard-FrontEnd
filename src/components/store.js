@@ -4,7 +4,7 @@ import axios from 'axios'
 export const useStore = createStore({
     state: {
         tokenIsTrue: null,
-        backendLink: 'https://backatevg.site/timewizard',
+        backendLink: 'http://localhost:8081/taskScheduler',
         visible: true,
         count: 0,
         taskList: {
@@ -18,9 +18,6 @@ export const useStore = createStore({
         selectedDay: new Date(),
     },
     mutations: {
-        increment(state) {
-            state.count++
-        },
         setSelectedDay(state, date) {
             state.selectedDay = date;
         },

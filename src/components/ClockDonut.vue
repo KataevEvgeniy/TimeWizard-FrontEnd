@@ -146,7 +146,8 @@ export default {
             }));
 
             tooltip.add(new Konva.Text({
-              text: Math.floor(data.start / 60).toString().padStart(2, "0") + ":" + (data.start % 60).toString().padStart(2, "0")
+              text: data.date.title + "\n" +
+                  Math.floor(data.start / 60).toString().padStart(2, "0") + ":" + (data.start % 60).toString().padStart(2, "0")
                   + " - " + Math.floor(data.end / 60).toString().padStart(2, "0") + ":" + (data.end % 60).toString().padStart(2, "0"),
               fontFamily: 'Calibri',
               fontSize: 18,
