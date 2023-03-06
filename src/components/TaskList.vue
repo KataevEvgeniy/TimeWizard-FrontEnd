@@ -31,12 +31,15 @@
         <button class="task_menu_btn" @click="updateTaskCompletion(task,true) ">Выполнено</button>
         <button class="task_menu_btn" @click="updateTaskCompletion(task,false)">Провалено</button>
         </div>
-        <button class="task_menu_btn" v-else>Change</button>
+        <button class="task_menu_btn" v-else @click="showChangeMenu(task)">Change</button>
         <button class="task_menu_btn" @click="deleteTaskOnServer(task)">Удалить</button>
       </div>
     </div>
     <button @click="this.$store.dispatch('showMessage',{messageText:'hell',color:'red'})">click</button>
     <task-list-form :type="'create'"></task-list-form>
+    <div style="display: none" id="changing_menu">
+      <task-list-form ref="changingForm" id="changeForm" :type="'change'" :task="changingTask"></task-list-form>
+    </div>
   </div>
 </template>
 
@@ -53,6 +56,7 @@ export default {
   data() {
     return {
       tasks: [],
+      changingTask:null,
     }
   },
   mounted() {
@@ -72,6 +76,10 @@ export default {
     },
   },
   methods: {
+    showChangeMenu(task){
+      this.changingTask = task;
+      document.getElementById('changing_menu').style.display = 'block';
+    },
     getMainGradient(color) {
       return `linear-gradient(114deg, #222629 60%, ${color} 95%)`;
     },
@@ -178,6 +186,12 @@ export default {
 </script>
 
 <style scoped>
+#changing_menu{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .tag{
   border-radius: 15px;
   background-color: green;

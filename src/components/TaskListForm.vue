@@ -41,6 +41,7 @@
       </span>
     </form>
     <button v-if="type==='create'" class="create_button" @click="createTask"></button>
+    <button v-if="type==='change'" class="create_button" @click="updateTask(taskTemplate); hideChangingForm()"></button>
   </span>
 </template>
 
@@ -50,14 +51,15 @@ import axios from "axios";
 export default {
   props:{
     type: String,
+    task: Object
   },
   data (){
     return{
       taskTemplate: {
         title: '',
         definition: '',
-        startDate: this.getCurrentDate(0),
-        endDate: this.getCurrentDate(1),
+        startDate: this.getFormattedDate(new Date(),0),
+        endDate: this.getFormattedDate(new Date(),1),
         completed: null,
         colorInHex: "#FFFFFF",
         frequency: 1,
@@ -70,12 +72,21 @@ export default {
           this.completed = null;
           this.frequency = 1;
           this.timeUnit = "never";
-
         }
       },
     }
   },
+  watch:{
+    task(task){
+      this.taskTemplate = task;
+      this.taskTemplate.startDate = this.getFormattedDate(new Date(task.startDate),0)
+      this.taskTemplate.endDate = this.getFormattedDate(new Date(task.endDate),0)
+    }
+  },
   methods:{
+    hideChangingForm(){
+      document.getElementById('changing_menu').style.display = 'none';
+    },
     async createTask() {
       const newTask = {
         title: this.taskTemplate.title,
@@ -107,8 +118,8 @@ export default {
         console.log(error);
       });
     },
-    getCurrentDate(appendedHour) {
-      let curDate = new Date();
+    getFormattedDate(date,appendedHour) {
+      let curDate = date;
       curDate.setHours(curDate.getHours() + appendedHour);
       return {
         date: curDate.getFullYear() + "-" + (curDate.getMonth() + 1).toString().padStart(2, "0") + "-" + curDate.getDate().toString().padStart(2, "0"),
@@ -117,7 +128,8 @@ export default {
     },
     async updateTask(task) {
       let tempTask = task
-      tempTask.completed = this.taskTemplate.completed;
+      tempTask.startDate = new Date(this.taskTemplate.startDate.date + " " + this.taskTemplate.startDate.time)
+      tempTask.endDate = new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time)
       await this.updateTaskOnServer(tempTask);
     },
     async updateTaskOnServer(data) {
@@ -127,12 +139,12 @@ export default {
           'Authorization': localStorage.getItem('token')
         }
       }).then((response) => {
+        this.$store.dispatch('getAllTasks')
         console.log(response);//TODO delete this
       }).catch(function (error) {
         console.log(error);
       });
-      this.taskTemplate.rollBack();
-      this.$store.dispatch('getAllTasks')
+
     },
   }
 }
