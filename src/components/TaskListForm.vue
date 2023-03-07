@@ -28,19 +28,19 @@
         <option value="year">year</option>
       </select><br>
       <span>
-        <input :value="taskTemplate.startDate.time"
-               @input="taskTemplate.startDate.time = $event.target.value" type="time">
+        <input :value="getTime(taskTemplate.startDate)"
+               @input="setTime(taskTemplate.startDate, $event.target.value)" type="time">
         &#8212;
-        <input :value="taskTemplate.endDate.time"
-               @input="taskTemplate.endDate.time = $event.target.value" type="time"><br>
-        <input :value="taskTemplate.startDate.date"
-               @input="taskTemplate.startDate.date = $event.target.value" type="date"/>
+        <input :value="getTime(taskTemplate.endDate)"
+               @input="setTime(taskTemplate.endDate, $event.target.value)" type="time"><br>
+        <input :value="getDate(taskTemplate.startDate)"
+               @input="setDate(taskTemplate.startDate, $event.target.value)" type="date"/>
         &#8212;
-        <input :value="taskTemplate.endDate.date"
-               @input="taskTemplate.endDate.date = $event.target.value" type="date"/>
+        <input :value="getDate(taskTemplate.endDate)"
+               @input="setDate(taskTemplate.endDate, $event.target.value)" type="date"/>
       </span>
     </form>
-    <button v-if="type==='create'" class="create_button" @click="createTask"></button>
+    <button v-if="type==='create'" class="create_button" @click="createTask(taskTemplate)"></button>
     <button v-if="type==='change'" class="create_button" @click="updateTask(taskTemplate); hideChangingForm()"></button>
   </span>
 </template>
@@ -58,8 +58,8 @@ export default {
       taskTemplate: {
         title: '',
         definition: '',
-        startDate: this.getFormattedDate(new Date(),0),
-        endDate: this.getFormattedDate(new Date(),1),
+        startDate: new Date(),
+        endDate: this.appendHour(new Date(), 1),
         completed: null,
         colorInHex: "#FFFFFF",
         frequency: 1,
@@ -78,31 +78,38 @@ export default {
   },
   watch:{
     task(task){
-      this.taskTemplate = task;
-      this.taskTemplate.startDate = this.getFormattedDate(new Date(task.startDate),0)
-      this.taskTemplate.endDate = this.getFormattedDate(new Date(task.endDate),0)
+      this.taskTemplate = {...task};
+      this.taskTemplate.startDate = new Date(this.taskTemplate.startDate);
+      this.taskTemplate.endDate = new Date(this.taskTemplate.endDate);
     }
   },
   methods:{
+    getDate(date){
+      return date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, "0") + "-" + date.getDate().toString().padStart(2, "0");
+    },
+    getTime(date){
+      return date.getHours().toString().padStart(2, "0") + ":" + date.getMinutes().toString().padStart(2, "0");
+    },
+    setTime(date,string){
+      let [hours,minutes] = string.split(":")
+      date.setHours(hours);
+      date.setMinutes(minutes);
+    },
+    setDate(date,string){
+      let [year,month,day] = string.split("-")
+      date.setYear(year)
+      date.setMonth(month - 1)
+      date.setDate(day)
+    },
     hideChangingForm(){
       document.getElementById('changing_menu').style.display = 'none';
     },
-    async createTask() {
-      const newTask = {
-        title: this.taskTemplate.title,
-        definition: this.taskTemplate.definition,
-        startDate: new Date(this.taskTemplate.startDate.date + " " + this.taskTemplate.startDate.time),
-        endDate: new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time),
-        completed: null,
-        colorInHex: this.taskTemplate.colorInHex,
-        frequency: this.taskTemplate.frequency,
-        timeUnit: this.taskTemplate.timeUnit,
-      }
-      if (newTask.startDate > newTask.endDate) {
+    async createTask(task) {
+      if (task.startDate > task.endDate) {
         this.$store.dispatch('showMessage', {messageText: 'Task cannot end before it starts', color: 'red'})
         return;
       }
-      await this.createTaskOnServer(newTask);
+      await this.createTaskOnServer(task);
     },
     async createTaskOnServer(data) {
       await axios.post(this.$store.state.backendLink + "/saveCalendarTask", data, {
@@ -118,18 +125,16 @@ export default {
         console.log(error);
       });
     },
-    getFormattedDate(date,appendedHour) {
-      let curDate = date;
-      curDate.setHours(curDate.getHours() + appendedHour);
-      return {
-        date: curDate.getFullYear() + "-" + (curDate.getMonth() + 1).toString().padStart(2, "0") + "-" + curDate.getDate().toString().padStart(2, "0"),
-        time: curDate.getHours().toString().padStart(2, "0") + ":" + curDate.getMinutes().toString().padStart(2, "0")
-      };
+    appendHour(date,appendedHour) {
+      date.setHours(date.getHours() + appendedHour);
+      return date;
     },
     async updateTask(task) {
-      let tempTask = task
-      tempTask.startDate = new Date(this.taskTemplate.startDate.date + " " + this.taskTemplate.startDate.time)
-      tempTask.endDate = new Date(this.taskTemplate.endDate.date + " " + this.taskTemplate.endDate.time)
+      let tempTask = {...task}
+      if (tempTask.startDate > tempTask.endDate) {
+        this.$store.dispatch('showMessage', {messageText: 'Task cannot end before it starts', color: 'red'})
+        return;
+      }
       await this.updateTaskOnServer(tempTask);
     },
     async updateTaskOnServer(data) {
@@ -143,6 +148,7 @@ export default {
         console.log(response);//TODO delete this
       }).catch(function (error) {
         console.log(error);
+        this.taskTemplate.rollBack()
       });
 
     },
@@ -151,71 +157,9 @@ export default {
 </script>
 
 <style scoped>
-.tag{
-  border-radius: 15px;
-  background-color: green;
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  padding: 0px 6px;
-}
-
-.tags{
-  display: flex;
-  flex-direction: row;
-}
 
 textarea {
   resize: none;
-}
-
-.task_exam, .create_form_box {
-  min-width: 400px;
-  margin-top: 15px;
-}
-
-.task_exam {
-  border-radius: 14px;
-  user-select: contain;
-  border: 1px solid;
-  border-color: grey;
-  display: flex;
-  flex-direction: row;
-}
-
-.task_body {
-  display: flex;
-  flex-direction: column;
-  width: 85%;
-}
-
-.task_menu {
-
-  display: flex;
-  flex-direction: column;
-  width: 15%;
-}
-
-.task_menu_btn {
-  height: 33.33%;
-  border: none;
-  background: none;
-  border-bottom-right-radius: 14px;
-  border-top-right-radius: 14px;
-  background: rgb(230, 190, 8);
-  background: radial-gradient(circle, rgba(230, 190, 8, 1) 7%, rgba(73, 78, 78, 0) 56%);
-}
-
-.task_menu_btn:hover {
-  transform: translateY(-2px);
-  background: rgb(230, 190, 8);
-  background: radial-gradient(circle, rgba(230, 190, 8, 1) 20%, rgba(73, 78, 78, 0) 70%);
-}
-
-.task_exam:hover {
-  border-color: red;
-  transform: scale(1.05);
-
 }
 
 .task_form {
@@ -223,23 +167,6 @@ textarea {
   padding-left: 5px;
   text-align: left;
   width: 90%;
-}
-
-.tasks {
-  display: inline-block;
-  width: 60%;
-  vertical-align: top;
-}
-
-
-.name, .definition, .date {
-  margin-left: 5%;
-  text-align: left;
-  word-wrap: break-word;
-}
-
-.definition, .date {
-  font-size: 16px;
 }
 
 .create_form_box {
