@@ -43,7 +43,7 @@ export default {
               if (response.data == "Login is accept") {
                 useStore.dispatch('showMessage', {messageText: response.data, color: 'green'})
                 setTimeout(function () {
-                  useStore.state.frontendLink = true;
+                  useStore.state.tokenIsTrue = true;
                 }, 500);
               }
 
