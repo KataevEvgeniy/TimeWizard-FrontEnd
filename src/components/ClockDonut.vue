@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="clock_donut"></div>
+    <div id="clock_donut" ></div>
   </div>
 </template>
 
@@ -26,6 +26,20 @@ export default {
   methods: {
     drawDonut(dates) {
       let canvas = document.getElementById("clock_donut");
+
+      var resizeTimer;
+      function resizeStage() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+          let standard = canvas.children[0].children[0].style.width;
+          let size = parseInt(standard) > window.innerWidth ? window.innerWidth : parseInt(standard);
+          canvas.children[0].style.height = size+'px';
+          canvas.children[0].style.width = size+'px';
+          canvas.children[0].children[0].style.height = size+'px';
+          canvas.children[0].children[0].style.width = size+'px';
+        }, 500);
+      }
+      window.addEventListener('resize', resizeStage);
 
       let inputDates = [];
       let selectedDay = this.$store.getters.selectedDay.startDateTime;
@@ -60,9 +74,10 @@ export default {
 
       let stage = new Konva.Stage({
         container: canvas,
-        width: 400,
-        height: 400
+        width: (sortedDatesForSircle.length*30 +70)*2,
+        height: (sortedDatesForSircle.length*30 +70)*2
       });
+
       let layer = new Konva.Layer();
 
       const arrow = new Konva.Arrow({
@@ -117,7 +132,7 @@ export default {
           stroke: 'rgb(0,0,0,0.1)',
           strokeWidth: 2,
           cornerRadius: 20,
-          rotation: -90
+          rotation: -90,
         });
         layer.add(arcBackground)
         sortedDatesForSircle[i].forEach(function (data) {
@@ -131,7 +146,7 @@ export default {
             stroke: 'black',
             strokeWidth: 2,
             cornerRadius: 20,
-            rotation: data.start / 4 - 90
+            rotation: data.start / 4 - 90,
           });
 
           arc.on('mouseover', function (event) {
@@ -172,6 +187,13 @@ export default {
         })
       }
       stage.add(layer);
+      console.log(window.innerWidth)
+      let standard = canvas.children[0].children[0].style.width;
+      let size = parseInt(standard) > window.innerWidth ? window.innerWidth : parseInt(standard);
+      canvas.children[0].style.height = size+'px';
+      canvas.children[0].style.width = size+'px';
+      canvas.children[0].children[0].style.height = size+'px';
+      canvas.children[0].children[0].style.width = size+'px';
     }
   }
 }

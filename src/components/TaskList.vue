@@ -1,16 +1,15 @@
 <template>
 
-  <div @submit.prevent class="tasks">
+  <div @submit.prevent class="tasks_box">
     <div
         :id="task.id"
-        class="task_exam"
+        class="task"
         :style="{background: getMainGradient(task.colorInHex)}"
         v-for="task in tasks"
         :key="task"
     >
       <div class="task_body">
         <div class="name">> {{ task.title }}</div>
-
         <div class="definition">> {{ task.definition }}</div>
         <div class="date">>
           {{
@@ -209,174 +208,14 @@ export default {
 textarea {
   resize: none;
 }
-
-.task_exam, .create_form_box {
-  min-width: 400px;
-  margin-top: 15px;
-}
-
-.task_exam {
-  border-radius: 14px;
-  user-select: contain;
-  border: 1px solid;
-  border-color: grey;
-  display: flex;
-  flex-direction: row;
-}
-
-.task_body {
+.tasks_box{
   display: flex;
   flex-direction: column;
-  width: 85%;
-}
-
-.task_menu {
-
-  display: flex;
-  flex-direction: column;
-  width: 15%;
-}
-
-.task_menu_btn {
-  height: 33.33%;
-  border: none;
-  background: none;
-  border-bottom-right-radius: 14px;
-  border-top-right-radius: 14px;
-  background: rgb(230, 190, 8);
-  background: radial-gradient(circle, rgba(230, 190, 8, 1) 7%, rgba(73, 78, 78, 0) 56%);
-}
-
-.task_menu_btn:hover {
-  transform: translateY(-2px);
-  background: rgb(230, 190, 8);
-  background: radial-gradient(circle, rgba(230, 190, 8, 1) 20%, rgba(73, 78, 78, 0) 70%);
-}
-
-.task_exam:hover {
-  border-color: red;
-  transform: scale(1.05);
-
-}
-
-.task_form {
-  padding: 5px 0px;
-  padding-left: 5px;
-  text-align: left;
   width: 90%;
 }
 
-.tasks {
-  display: inline-block;
-  width: 60%;
-  vertical-align: top;
-}
-
-
-.name, .definition, .date {
-  margin-left: 5%;
-  text-align: left;
-  word-wrap: break-word;
-}
-
-.definition, .date {
-  font-size: 16px;
-}
-
-.create_form_box {
-  display: flex;
-
-
-  flex-direction: row;
-  border-radius: 14px;
-  background-color: #474B4F;
-}
-
-.definition_input, .name_input {
-  border: none;
-  border-radius: 10px;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  color: white;
-  background-color: #222629;
-  width: 90%;
-}
-
-.create_button {
-  background: linear-gradient(#474B4F, #474B4F),
-  linear-gradient(#474B4F, #474B4F);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #222629;
-  background-size: 50% 3px, 3px 50%;
-  border: none;
-  color: white;
-  width: 10%;
-  border-bottom-right-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-.create_button:hover {
-  outline: 4px solid #474B4F;
-  outline-offset: -4px;
-}
-
-input[type="color"] {
-  width: 30px;
-  height: 30px;
-  border: none;
-  background-color: rgba(0, 0, 0, 0);
+.task{
 
 }
 
-input[type="time"], input[type="date"] {
-  border: none;
-  color: #d4d4d4;
-  font-size: 14px;
-  font-family: helvetica;
-  width: 87px;
-  height: 18px;
-  background-color: rgba(0, 0, 0, 0);
-}
-
-input[type="time"]::-webkit-datetime-edit-fields-wrapper {
-  display: flex;
-
-}
-
-input[type="time"]::-webkit-datetime-edit-text {
-  padding: 19px 4px;
-}
-
-input[type="time"]::-webkit-datetime-edit-hour-field {
-  /* background-color: #f2f4f5; */
-  border-radius: 15%;
-  padding: 19px 5px;
-}
-
-input[type="time"]::-webkit-datetime-edit-minute-field {
-  /* background-color: #f2f4f5; */
-  border-radius: 15%;
-  padding: 19px 5px;
-}
-
-input[type="time"]::-webkit-datetime-edit-ampm-field {
-  display: none;
-}
-
-input[type="time"]::-webkit-clear-button {
-  display: none;
-}
-
-input[type="time"]::-webkit-inner-spin-button {
-  display: none;
-}
-
-input[type="time"]::-webkit-calendar-picker-indicator {
-
-}
-
-input[type="date"] {
-  width: 95px;
-}
 </style>

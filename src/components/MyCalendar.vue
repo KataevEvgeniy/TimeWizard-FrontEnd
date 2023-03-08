@@ -127,6 +127,7 @@ td:hover {
 #calendar {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 #calendar_table {
