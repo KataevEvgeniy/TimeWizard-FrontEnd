@@ -4,7 +4,7 @@ import axios from 'axios'
 export const useStore = createStore({
     state: {
         tokenIsTrue: null,
-        backendLink: 'https://backatevg/timewizard',
+        backendLink: 'https://backatevg.site/timewizard',
         visible: true,
         count: 0,
         taskList: {
