@@ -93,6 +93,7 @@ body {
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
+
 }
 
 .change_page_button:hover {

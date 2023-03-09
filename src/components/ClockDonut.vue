@@ -74,8 +74,8 @@ export default {
 
       let stage = new Konva.Stage({
         container: canvas,
-        width: (sortedDatesForSircle.length*30 +70)*2,
-        height: (sortedDatesForSircle.length*30 +70)*2
+        width: (sortedDatesForSircle.length*30+70)*2 + 60,
+        height: (sortedDatesForSircle.length*30+70)*2 + 60
       });
 
       let layer = new Konva.Layer();
@@ -120,6 +120,21 @@ export default {
 
       setInterval(setTimeText(), 60000);
       layer.add(timeText);
+      if(sortedDatesForSircle.length === 0){
+        let arcBackground = new Konva.Arc({
+          x: stage.width() / 2,
+          y: stage.height() / 2,
+          innerRadius: 70,
+          outerRadius: 100,
+          angle: 360,
+          fill: "rgb(189,189,189,0.1)",
+          stroke: 'rgb(0,0,0,0.1)',
+          strokeWidth: 2,
+          cornerRadius: 20,
+          rotation: -90,
+        });
+        layer.add(arcBackground)
+      }
 
       for (let i = 0; i < sortedDatesForSircle.length; i++) {
         let arcBackground = new Konva.Arc({

@@ -26,12 +26,16 @@
         </div>
       </div>
       <div class="task_menu">
-        <div v-if="task.completed == null && task.endDate < Date.now()">
-        <button class="task_menu_btn" @click="updateTaskCompletion(task,true) ">Выполнено</button>
-        <button class="task_menu_btn" @click="updateTaskCompletion(task,false)">Провалено</button>
+        <div class="task_menu_change_btn_box" v-if="task.completed == null && task.endDate < Date.now()">
+          <button class="task_menu_btn" @click="updateTaskCompletion(task,true)" style="background-color: greenyellow">✔</button>
+          <button class="task_menu_btn" @click="updateTaskCompletion(task,false)" style="background-color: red">✘</button>
         </div>
-        <button class="task_menu_btn" v-else @click="showChangeMenu(task)">Change</button>
-        <button class="task_menu_btn" @click="deleteTaskOnServer(task)">Удалить</button>
+        <div v-else class="task_menu_change_btn_box">
+          <button class="task_menu_btn"  @click="showChangeMenu(task)">✄</button>
+        </div>
+        <div class="task_menu_change_btn_box">
+          <button class="task_menu_btn" @click="deleteTaskOnServer(task)">🗑</button>
+        </div>
       </div>
     </div>
     <button @click="this.$store.dispatch('showMessage',{messageText:'hell',color:'red'})">click</button>
@@ -211,11 +215,50 @@ textarea {
 .tasks_box{
   display: flex;
   flex-direction: column;
-  width: 90%;
+  width: 90vw;
+  background-color: grey;
+  padding: 1vw;
 }
 
 .task{
+  border-bottom: 2px solid;
+  border-image: linear-gradient(to left, rgba(0,0,0,0) 1%, darkgrey 50%, rgba(0,0,0,0) 100%)
+  100% 0 100% ;
+  padding: 1vw;
+  display: flex;
+  flex-direction: row;
+}
 
+.task_body{
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.task_menu{
+  width: 10%;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.task_menu_change_btn_box{
+  display: flex;
+  flex-direction: row;
+
+}
+
+.task_menu_btn{
+  border-radius: 10px;
+  flex-grow: 1;
+  align-self: flex-start;
+
+}
+
+.task_menu_btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 </style>
