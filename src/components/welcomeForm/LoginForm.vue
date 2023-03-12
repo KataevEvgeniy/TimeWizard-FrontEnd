@@ -11,7 +11,7 @@
 <script>
 
 import axios from 'axios'
-import {useStore} from './store';
+import {useStore} from '../store';
 
 
 export default {

@@ -202,7 +202,6 @@ export default {
         })
       }
       stage.add(layer);
-      console.log(window.innerWidth)
       let standard = canvas.children[0].children[0].style.width;
       let size = parseInt(standard) > window.innerWidth ? window.innerWidth : parseInt(standard);
       canvas.children[0].style.height = size+'px';

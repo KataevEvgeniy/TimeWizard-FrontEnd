@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import login_form from "./LoginForm.vue"
-import register_form from "./RegisterForm.vue"
+import login_form from "./welcomeForm/LoginForm.vue"
+import register_form from "./welcomeForm/RegisterForm.vue"
 
 export default {
   components: {

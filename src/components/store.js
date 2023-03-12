@@ -1,18 +1,35 @@
 import {createStore} from 'vuex'
 import axios from 'axios'
+
 // eslint-disable-next-line
 export const useStore = createStore({
     state: {
         tokenIsTrue: null,
-        backendLink: 'https://backatevg.site/timewizard',
+        backendLink: 'http://localhost:8081/taskScheduler',
         visible: true,
         count: 0,
         taskList: {
+            unsorted:[],
             singly: [],
             daily: [],
             weekly: [],
             monthly: [],
-            yearly: []
+            yearly: [],
+
+            sortTasks() {
+                this.unsorted.forEach(elem => {
+                    if (elem.timeUnit === 'never')
+                        this.singly.push(elem);
+                    else if (elem.timeUnit === 'day')
+                        this.daily.push(elem);
+                    else if (elem.timeUnit === 'week')
+                        this.weekly.push(elem);
+                    else if (elem.timeUnit === 'month')
+                        this.monthly.push(elem);
+                    else if (elem.timeUnit === 'year')
+                        this.yearly.push(elem);
+                });
+            }
         },
         taskInThisDay: [],
         selectedDay: new Date(),
@@ -21,8 +38,14 @@ export const useStore = createStore({
         setSelectedDay(state, date) {
             state.selectedDay = date;
         },
-        setTaskList(state, array) {
-            state.taskList = array;
+        addTaskToTaskList(state,task){
+          state.taskList.unsorted.push(task);
+          state.taskList.sortTasks();
+        },
+        setTaskList(state, unsortedArray) {
+            state.taskList.unsorted = unsortedArray;
+            state.taskList.sortTasks();
+
         },
         taskInThisDay(state, tasks) {
             state.taskInThisDay = tasks;
@@ -37,38 +60,12 @@ export const useStore = createStore({
                 }
             })
                 .then((response) => {
-
-                    this.commit('setTaskList', sort(response.data));
-                    //localStorage.setItem("tasks", JSON.stringify(this.TaskListArray));
+                    this.commit('setTaskList', response.data);
                     console.log(response);
                 })
                 .catch(function (error) {
                     console.log(error);
-
                 });
-
-            function sort(array) {
-                let sortedArray = {
-                    singly: [],
-                    daily: [],
-                    weekly: [],
-                    monthly: [],
-                    yearly: []
-                };
-                array.forEach(elem => {
-                    if (elem.timeUnit == 'never')
-                        sortedArray.singly.push(elem);
-                    else if (elem.timeUnit == 'day')
-                        sortedArray.daily.push(elem);
-                    else if (elem.timeUnit == 'week')
-                        sortedArray.weekly.push(elem);
-                    else if (elem.timeUnit == 'month')
-                        sortedArray.monthly.push(elem);
-                    else if (elem.timeUnit == 'year')
-                        sortedArray.yearly.push(elem);
-                });
-                return sortedArray;
-            }
         },
         showMessage(state, {messageText, color}) {
             var errorMessage = document.createElement("div");
@@ -118,6 +115,9 @@ export const useStore = createStore({
         taskList(state) {
             return state.taskList;
         },
+        unsortedTaskList(state){
+          return state.taskList.unsorted
+        },
         taskInThisDay(state) {
             return state.taskInThisDay;
         }
@@ -126,8 +126,11 @@ export const useStore = createStore({
         selectedDay() {
             return this.$store.getters.selectedDay;
         },
-        taskListArray() {
-            return this.$store.getters.taskList;
+        unsortedTaskList(getters){
+          return  getters.unsortedTaskList;
+        },
+        taskList() {
+            return this.$store.taskList;
         },
         taskInThisDay() {
             return this.$store.getters.taskInThisDay;

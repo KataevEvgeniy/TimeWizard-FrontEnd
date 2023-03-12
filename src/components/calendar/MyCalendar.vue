@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import {useStore} from './store';
+import {useStore} from '../store';
 
 export default {
   data() {

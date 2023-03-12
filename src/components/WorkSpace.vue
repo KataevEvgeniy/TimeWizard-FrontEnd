@@ -18,10 +18,10 @@
 
 <script>
 /* eslint-disable */
-import task_list from './components/TaskList'
-import calendar from "./components/MyCalendar.vue"
-import clock_donut from './components/ClockDonut.vue'
-import task_table from './components/TaskTable.vue'
+import task_list from './calendar/TaskList.vue'
+import calendar from "./calendar/MyCalendar.vue"
+import clock_donut from './calendar/ClockDonut.vue'
+import task_table from './board/TaskTable.vue'
 
 export default {
   components: {

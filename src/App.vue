@@ -14,7 +14,7 @@
 <script>
 
 import WelcomeForm from "@/components/WelcomeForm.vue";
-import WorkSpace from "@/WorkSpace.vue";
+import WorkSpace from "@/components/WorkSpace.vue";
 import DynamicBackground from "@/components/DynamicBackground.vue";
 
 export default {

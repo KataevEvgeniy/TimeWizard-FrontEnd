@@ -50,7 +50,7 @@
 //import { useStore } from './store'
 import axios from 'axios'
 import {mapGetters} from 'vuex';
-import taskListForm from "@/components/TaskListForm.vue";
+import taskListForm from "@/components/calendar/TaskListForm.vue";
 
 export default {
   components:{
@@ -68,7 +68,7 @@ export default {
   computed: {
     ...mapGetters(['selectedDay']),
     ...mapGetters(['taskList']),
-
+    ...mapGetters(['unsortedTaskList'])
   },
   watch: {
     selectedDay() {
@@ -77,6 +77,9 @@ export default {
     taskList() {
       this.defineTasksOfDay(this.$store.getters.selectedDay);
     },
+    unsortedTaskList(){
+      this.defineTasksOfDay(this.$store.getters.selectedDay);
+    }
   },
   methods: {
     showChangeMenu(task){
@@ -88,6 +91,7 @@ export default {
     },
     defineTasksOfDay(selectedDate) {
       let singlyTasks = this.$store.getters.taskList.singly;
+
       let dailyTasks = this.$store.getters.taskList.daily;
       let weeklyTasks = this.$store.getters.taskList.weekly;
       let monthlyTasks = this.$store.getters.taskList.monthly;
