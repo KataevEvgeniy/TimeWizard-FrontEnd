@@ -119,7 +119,7 @@ export default {
         }
       }).then((response) => {
         this.taskTemplate.rollBack();
-        this.$store.dispatch('getAllTasks');
+        this.$store.commit('addTaskToTaskList',response.data)
         console.log(response);//TODO delete this
       }).catch(function (error) {
         console.log(error);
@@ -144,7 +144,7 @@ export default {
           'Authorization': localStorage.getItem('token')
         }
       }).then((response) => {
-        this.$store.dispatch('getAllTasks')
+        this.$store.commit('updateTaskOnTaskList',response.data)
         console.log(response);//TODO delete this
       }).catch(function (error) {
         console.log(error);

@@ -5,7 +5,7 @@
         :id="task.id"
         class="task"
         :style="{background: getMainGradient(task.colorInHex)}"
-        v-for="task in tasks"
+        v-for="task in this.$store.getters.taskInThisDay"
         :key="task"
     >
       <div class="task_body">
@@ -58,28 +58,30 @@ export default {
   },
   data() {
     return {
-      tasks: [],
       changingTask:null,
     }
   },
   mounted() {
-    this.defineTasksOfDay(this.$store.getters.selectedDay);
+    this.$store.dispatch('defineTasksOfDay');
   },
   computed: {
     ...mapGetters(['selectedDay']),
     ...mapGetters(['taskList']),
-    ...mapGetters(['unsortedTaskList'])
+    ...mapGetters(['unsortedTaskList']),
   },
   watch: {
     selectedDay() {
-      this.defineTasksOfDay(this.$store.getters.selectedDay);
+
+      this.$store.dispatch('defineTasksOfDay');
     },
     taskList() {
-      this.defineTasksOfDay(this.$store.getters.selectedDay);
+
+      this.$store.dispatch('defineTasksOfDay');
     },
     unsortedTaskList(){
-      this.defineTasksOfDay(this.$store.getters.selectedDay);
-    }
+
+      this.$store.dispatch('defineTasksOfDay');
+    },
   },
   methods: {
     showChangeMenu(task){
@@ -89,75 +91,10 @@ export default {
     getMainGradient(color) {
       return `linear-gradient(114deg, #222629 60%, ${color} 95%)`;
     },
-    defineTasksOfDay(selectedDate) {
-      let singlyTasks = this.$store.getters.taskList.singly;
 
-      let dailyTasks = this.$store.getters.taskList.daily;
-      let weeklyTasks = this.$store.getters.taskList.weekly;
-      let monthlyTasks = this.$store.getters.taskList.monthly;
-      let yearlyTasks = this.$store.getters.taskList.yearly;
-
-      let taskInThisDay = [];
-      singlyTasks.forEach((item) => {
-        if (roundDate(item.startDate) <= selectedDate.startDateTime.getTime() && selectedDate.startDateTime.getTime() <= roundDate(item.endDate))
-          taskInThisDay.push(item);
-      });
-      dailyTasks.forEach((item) => {
-        let dayInMillis = 86400000;
-        let deltaDays = Math.round((selectedDate.startDateTime.getTime() - item.startDate) / dayInMillis) + 1;
-        if ((deltaDays % item.frequency == 0 || deltaDays == 0) && deltaDays >= 0) {
-          let cloneItem = {...item}
-          cloneItem.startDate += dayInMillis * deltaDays;
-          cloneItem.endDate += dayInMillis * deltaDays;
-          taskInThisDay.push(cloneItem);
-        }
-      });
-      weeklyTasks.forEach((item) => {
-        let weekInMillis = 604800000;
-        let deltaWeeks = Math.round((selectedDate.endDateTime.getTime() - item.startDate) / weekInMillis);
-        if (selectedDate.startDateTime.getDay() == new Date(item.startDate).getDay() && deltaWeeks >= 0 && deltaWeeks % item.frequency == 0) {
-          let cloneItem = {...item}
-          cloneItem.startDate += weekInMillis * deltaWeeks;
-          cloneItem.endDate += weekInMillis * deltaWeeks;
-          taskInThisDay.push(cloneItem);
-        }
-      });
-      monthlyTasks.forEach((item) => {
-        let localSelectedDate = selectedDate.endDateTime;
-        let localStartDate = new Date(item.startDate)
-        let deltaMonthInMonth = (localSelectedDate.getFullYear() - localStartDate.getFullYear()) * 12 + (localSelectedDate.getMonth() - localStartDate.getMonth());
-        if (selectedDate.startDateTime.getDate() == new Date(item.startDate).getDate() && deltaMonthInMonth >= 0 && deltaMonthInMonth % item.frequency == 0) {
-          let cloneItem = {...item}
-          cloneItem.startDate = new Date(cloneItem.startDate).setMonth(new Date(cloneItem.startDate).getMonth() + deltaMonthInMonth);
-          cloneItem.endDate = new Date(cloneItem.endDate).setMonth(new Date(cloneItem.endDate).getMonth() + deltaMonthInMonth);
-          taskInThisDay.push(cloneItem);
-        }
-      });
-      yearlyTasks.forEach((item) => {
-        let localSelectedDate = selectedDate.startDateTime;
-        let localStartDate = new Date(item.startDate);
-        let deltaYears = localSelectedDate.getFullYear() - localStartDate.getFullYear();
-        if (localSelectedDate.getDate() == localStartDate.getDate() && localSelectedDate.getMonth() == localStartDate.getMonth() && deltaYears >= 0 && deltaYears % item.frequency == 0) {
-          let cloneItem = {...item}
-          cloneItem.startDate = new Date(cloneItem.startDate).setFullYear(new Date(cloneItem.startDate).getFullYear() + deltaYears);
-          cloneItem.endDate = new Date(cloneItem.endDate).setFullYear(new Date(cloneItem.endDate).getFullYear() + deltaYears);
-          taskInThisDay.push(cloneItem);
-        }
-      });
-      taskInThisDay.sort((a, b) => (a.startDate - b.startDate));
-      this.$store.commit('taskInThisDay', taskInThisDay);
-      this.tasks = this.$store.getters.taskInThisDay;
-
-      function roundDate(dateInMillis) {
-        let d = new Date(dateInMillis);
-        return new Date(d.getFullYear(), d.getMonth(), d.getDate())
-      }
-    },
     async updateTaskCompletion(task,result) {
       task.completed = result;
       await this.updateTaskOnServer(task);
-
-
     },
     async updateTaskOnServer(data) {
       await axios.post(this.$store.state.backendLink + "/updateCalendarTask", data, {
@@ -166,11 +103,12 @@ export default {
           'Authorization': localStorage.getItem('token')
         }
       }).then((response) => {
+        this.$store.commit('updateTaskOnTaskList',response.data)
         console.log(response);//TODO delete this
       }).catch(function (error) {
         console.log(error);
       });
-      this.$store.dispatch('getAllTasks')
+
     },
     deleteTask(task) {
       this.deleteTaskOnServer(task);
@@ -182,11 +120,11 @@ export default {
           'Authorization': localStorage.getItem('token')
         }
       }).then((response) => {
+        this.$store.commit('deleteTaskOnTaskList',data)
         console.log(response);//TODO delete this
       }).catch(function (error) {
         console.log(error);
       });
-      this.$store.dispatch('getAllTasks');
     },
   }
 }

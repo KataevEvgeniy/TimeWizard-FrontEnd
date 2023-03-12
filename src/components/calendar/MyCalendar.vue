@@ -6,9 +6,9 @@
     </div>
     <div id="calendar_box">
       <div id="monthYear">
-        <button id="prev_button" @click="prevMonth()"><i class="fas fa-arrow-left arrow"></i></button>
+        <button id="prev_button" class="arrow" @click="prevMonth()">&#8678;</button>
         <div id="year_date_span">{{ getMonthName() + " " + getYear() }}</div>
-        <button id="next_button" @click="nextMonth()"><i class="fas fa-arrow-right arrow"></i></button>
+        <button id="next_button" class="arrow" @click="nextMonth()">&#8680;</button>
       </div>
       <table id="calendar_table">
         <tr>
@@ -152,7 +152,6 @@ td:hover {
   border-radius: 10px;
 }
 
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
 .arrow {
   font-size: 24px;
   color: black;
