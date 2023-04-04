@@ -35,7 +35,11 @@ export default {
   methods: {
     async register() {
       if (this.userIsTrue(this.User))
-        await axios.post(this.$store.state.backendLink + "/register", this.User, {headers: {'Content-Type': 'application/json',}})
+        await axios.post(this.$store.state.backendLink + "/register", {
+          username: null,
+          email: null,
+          password: null
+        }, {headers: {'Content-Type': 'application/json',}})
             .then((response) => {
               console.log(response);
               localStorage.setItem('token', response.headers.authorization);

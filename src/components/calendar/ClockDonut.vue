@@ -59,11 +59,13 @@ export default {
         let arraysForAllRing = []
         while (inputArr.length > 0) {
           let arrayForSingleRing = []
-          for (let i = 0, lastEnd = 0; i < inputArr.length; i++) {
+          let lastEnd = 0;
+          for (let i = 0; i < inputArr.length; i++) {
             if (inputArr[i].start >= lastEnd) {
               lastEnd = inputArr[i].end;
               arrayForSingleRing.push(inputArr[i]);
               inputArr.splice(i, 1);
+              i--;
             }
           }
           arraysForAllRing.push(arrayForSingleRing)
